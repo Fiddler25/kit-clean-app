@@ -12,3 +12,13 @@ type service struct {
 func NewService() Service {
 	return &service{}
 }
+
+var _ Service = MockService{}
+
+type MockService struct {
+	CreateProductFunc func(ctx context.Context, ipt createProductInput) (*Product, error)
+}
+
+func (m MockService) CreateProduct(ctx context.Context, ipt createProductInput) (*Product, error) {
+	return m.CreateProductFunc(ctx, ipt)
+}
