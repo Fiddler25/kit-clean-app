@@ -14,8 +14,11 @@ type (
 	}
 
 	createProductResponse struct {
-		Product *Product `json:"product,omitempty"`
-		Err     error    `json:"error,omitempty"`
+		ID          ID      `json:"id,omitempty"`
+		Name        string  `json:"name,omitempty"`
+		Description string  `json:"description,omitempty"`
+		Price       float64 `json:"price,omitempty"`
+		Err         error   `json:"error,omitempty"`
 	}
 )
 
@@ -30,8 +33,14 @@ func makeCreateProductEndpoint(s Service) endpoint.Endpoint {
 			Description: req.Description,
 			Price:       req.Price,
 		}
-		p, err := s.CreateProduct(ctx, ipt)
+		opt, err := s.CreateProduct(ctx, ipt)
 
-		return createProductResponse{Product: p, Err: err}, nil
+		return createProductResponse{
+			ID:          opt.ID,
+			Name:        opt.Name,
+			Description: opt.Description,
+			Price:       opt.Price,
+			Err:         err,
+		}, nil
 	}
 }

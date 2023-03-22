@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/go-kit/kit v0.12.0
+	github.com/google/go-cmp v0.5.9
 	github.com/prometheus/client_golang v1.11.0
 )
 

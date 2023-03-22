@@ -26,7 +26,7 @@ func MakeHandler(s Service, logger kitlog.Logger) http.Handler {
 
 	r := mux.NewRouter()
 
-	r.Handle("/v1/products", createProductHandler).Methods(http.MethodPost)
+	r.Methods(http.MethodPost).Path("/v1/products").Handler(createProductHandler)
 
 	return r
 }
