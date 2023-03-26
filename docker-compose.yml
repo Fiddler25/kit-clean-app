@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  db:
+    image: mysql:5.7
+    command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_bin']
+    restart: on-failure
+    environment:
+      TZ: Asia/Tokyo
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+      MYSQL_DATABASE: clean-architecture-sample
+    ports:
+      - '13306:3306'
+    volumes:
+      - ./tmp/container/clean-architecture-sample-db-data:/var/lib/mysql
