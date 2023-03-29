@@ -26,15 +26,16 @@ func main() {
 	logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stderr))
 	logger = log.With(logger, "ts", log.DefaultTimestampUTC)
 
-	db.New()
+	client := db.New()
 
-	ps := product.NewService()
-	ps = product.NewLoggingService(log.With(logger, "component", "product"), ps)
+	productRepo := product.NewRepository(client)
+	productSvc := product.NewService(productRepo)
+	productSvc = product.NewLoggingService(log.With(logger, "component", "product"), productSvc)
 
 	httpLogger := log.With(logger, "component", "http")
 
 	mux := http.NewServeMux()
-	mux.Handle("/v1/", product.MakeHandler(ps, httpLogger))
+	mux.Handle("/v1/", product.MakeHandler(productSvc, httpLogger))
 
 	http.Handle("/", accessControl(mux))
 	http.Handle("/metrics", promhttp.Handler())
