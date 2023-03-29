@@ -22,36 +22,46 @@ func (s service) PlaceOrder(ctx context.Context, ipt *placeOrderInput) (*Order, 
 		return nil, errors.New("insufficient stock")
 	}
 
-	stock := curr.Stock - ipt.quantity
-	pe := &product.Product{
-		ID:          curr.ID,
-		Name:        curr.Name,
-		Description: curr.Description,
-		Price:       curr.Price,
-		Stock:       stock,
-	}
-	p, err := s.productRepo.Update(ctx, pe)
-	if err != nil {
-		return nil, err
-	}
+	var order *Order
+	if err := s.tx.Do(ctx, func(ctx context.Context) error {
 
-	price := p.Price * float64(ipt.quantity)
-	oe := &Order{
-		ProductID:  ipt.productID,
-		UserID:     ipt.userID,
-		Quantity:   ipt.quantity,
-		TotalPrice: price,
-	}
-	o, err := s.repo.Create(ctx, oe)
-	if err != nil {
+		stock := curr.Stock - ipt.quantity
+		pe := &product.Product{
+			ID:          curr.ID,
+			Name:        curr.Name,
+			Description: curr.Description,
+			Price:       curr.Price,
+			Stock:       stock,
+		}
+		p, err := s.productRepo.Update(ctx, pe)
+		if err != nil {
+			return err
+		}
+
+		price := p.Price * float64(ipt.quantity)
+		oe := &Order{
+			ProductID:  ipt.productID,
+			UserID:     ipt.userID,
+			Quantity:   ipt.quantity,
+			TotalPrice: price,
+		}
+		o, err := s.repo.Create(ctx, oe)
+		if err != nil {
+			return err
+		}
+		order = o
+
+		return nil
+
+	}); err != nil {
 		return nil, err
 	}
 
 	return &Order{
-		ID:         o.ID,
-		ProductID:  o.ProductID,
-		UserID:     o.UserID,
-		Quantity:   o.Quantity,
-		TotalPrice: o.TotalPrice,
+		ID:         order.ID,
+		ProductID:  order.ProductID,
+		UserID:     order.UserID,
+		Quantity:   order.Quantity,
+		TotalPrice: order.TotalPrice,
 	}, nil
 }

@@ -1,6 +1,7 @@
 package product
 
 import (
+	"clean-architecture-sample/db"
 	"context"
 )
 
@@ -41,7 +42,7 @@ func (r *repository) Get(ctx context.Context, id ID) (*Product, error) {
 }
 
 func (r *repository) Update(ctx context.Context, p *Product) (*Product, error) {
-	e, err := r.client.Product.
+	e, err := db.Client(ctx).Product.
 		UpdateOneID(uint32(p.ID)).
 		SetName(p.Name).
 		SetDescription(p.Description).

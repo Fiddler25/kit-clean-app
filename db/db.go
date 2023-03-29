@@ -18,3 +18,10 @@ func New() *ent.Client {
 
 	return client
 }
+
+func Client(ctx context.Context) *ent.Client {
+	if tx := ent.TxFromContext(ctx); tx != nil {
+		return tx.Client()
+	}
+	return ent.FromContext(ctx)
+}

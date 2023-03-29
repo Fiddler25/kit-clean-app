@@ -27,6 +27,7 @@ func main() {
 	logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stderr))
 	logger = log.With(logger, "ts", log.DefaultTimestampUTC)
 
+	var tx db.Tx
 	client := db.New()
 
 	productRepo := product.NewRepository(client)
@@ -34,7 +35,7 @@ func main() {
 	productSvc = product.NewLoggingService(log.With(logger, "component", "product"), productSvc)
 
 	orderRepo := order.NewRepository(client)
-	orderSvc := order.NewService(orderRepo, productRepo)
+	orderSvc := order.NewService(tx, orderRepo, productRepo)
 	orderSvc = order.NewLoggingService(log.With(logger, "component", "order"), orderSvc)
 
 	httpLogger := log.With(logger, "component", "http")
