@@ -7,7 +7,7 @@ import (
 )
 
 type tx struct {
-	client *ent.Client
+	*ent.Client
 }
 
 type Tx interface {
@@ -15,7 +15,7 @@ type Tx interface {
 }
 
 func (t *tx) Do(ctx context.Context, f func(ctx context.Context) error) error {
-	tx, err := t.client.Tx(ctx)
+	tx, err := t.Tx(ctx)
 	if err != nil {
 		return err
 	}

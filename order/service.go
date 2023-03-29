@@ -23,3 +23,13 @@ func NewService(tx db.Tx, repo Repository, productRepo product.Repository) Servi
 		productRepo: productRepo,
 	}
 }
+
+var _ Service = MockService{}
+
+type MockService struct {
+	PlaceOrderFunc func(ctx context.Context, ipt *placeOrderInput) (*Order, error)
+}
+
+func (m MockService) PlaceOrder(ctx context.Context, ipt *placeOrderInput) (*Order, error) {
+	return m.PlaceOrderFunc(ctx, ipt)
+}

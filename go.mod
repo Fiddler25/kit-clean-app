@@ -1,5 +1,7 @@
 module clean-architecture-sample
 
+//module kit-clean-app
+
 go 1.20
 
 require (
