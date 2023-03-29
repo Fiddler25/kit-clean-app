@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 // ID filters vertices based on their ID field.
@@ -77,6 +78,11 @@ func Description(v string) predicate.Product {
 // Price applies equality check predicate on the "price" field. It's identical to PriceEQ.
 func Price(v float64) predicate.Product {
 	return predicate.Product(sql.FieldEQ(FieldPrice, v))
+}
+
+// Stock applies equality check predicate on the "stock" field. It's identical to StockEQ.
+func Stock(v uint8) predicate.Product {
+	return predicate.Product(sql.FieldEQ(FieldStock, v))
 }
 
 // CreatedEQ applies the EQ predicate on the "created" field.
@@ -337,6 +343,73 @@ func PriceLT(v float64) predicate.Product {
 // PriceLTE applies the LTE predicate on the "price" field.
 func PriceLTE(v float64) predicate.Product {
 	return predicate.Product(sql.FieldLTE(FieldPrice, v))
+}
+
+// StockEQ applies the EQ predicate on the "stock" field.
+func StockEQ(v uint8) predicate.Product {
+	return predicate.Product(sql.FieldEQ(FieldStock, v))
+}
+
+// StockNEQ applies the NEQ predicate on the "stock" field.
+func StockNEQ(v uint8) predicate.Product {
+	return predicate.Product(sql.FieldNEQ(FieldStock, v))
+}
+
+// StockIn applies the In predicate on the "stock" field.
+func StockIn(vs ...uint8) predicate.Product {
+	return predicate.Product(sql.FieldIn(FieldStock, vs...))
+}
+
+// StockNotIn applies the NotIn predicate on the "stock" field.
+func StockNotIn(vs ...uint8) predicate.Product {
+	return predicate.Product(sql.FieldNotIn(FieldStock, vs...))
+}
+
+// StockGT applies the GT predicate on the "stock" field.
+func StockGT(v uint8) predicate.Product {
+	return predicate.Product(sql.FieldGT(FieldStock, v))
+}
+
+// StockGTE applies the GTE predicate on the "stock" field.
+func StockGTE(v uint8) predicate.Product {
+	return predicate.Product(sql.FieldGTE(FieldStock, v))
+}
+
+// StockLT applies the LT predicate on the "stock" field.
+func StockLT(v uint8) predicate.Product {
+	return predicate.Product(sql.FieldLT(FieldStock, v))
+}
+
+// StockLTE applies the LTE predicate on the "stock" field.
+func StockLTE(v uint8) predicate.Product {
+	return predicate.Product(sql.FieldLTE(FieldStock, v))
+}
+
+// HasOrders applies the HasEdge predicate on the "orders" edge.
+func HasOrders() predicate.Product {
+	return predicate.Product(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, OrdersTable, OrdersColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasOrdersWith applies the HasEdge predicate on the "orders" edge with a given conditions (other predicates).
+func HasOrdersWith(preds ...predicate.Order) predicate.Product {
+	return predicate.Product(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(OrdersInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, OrdersTable, OrdersColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.

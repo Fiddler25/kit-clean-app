@@ -1,4 +1,4 @@
-package product
+package order
 
 import (
 	"clean-architecture-sample/ent"
@@ -6,9 +6,7 @@ import (
 )
 
 type Repository interface {
-	Create(ctx context.Context, p *Product) (*Product, error)
-	Get(ctx context.Context, id ID) (*Product, error)
-	Update(ctx context.Context, p *Product) (*Product, error)
+	Create(ctx context.Context, e *Order) (*Order, error)
 }
 
 type repository struct {

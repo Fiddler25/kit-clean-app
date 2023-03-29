@@ -2,6 +2,7 @@ package main
 
 import (
 	"clean-architecture-sample/db"
+	"clean-architecture-sample/order"
 	"clean-architecture-sample/product"
 	"flag"
 	"fmt"
@@ -32,10 +33,15 @@ func main() {
 	productSvc := product.NewService(productRepo)
 	productSvc = product.NewLoggingService(log.With(logger, "component", "product"), productSvc)
 
+	orderRepo := order.NewRepository(client)
+	orderSvc := order.NewService(orderRepo, productRepo)
+	orderSvc = order.NewLoggingService(log.With(logger, "component", "order"), orderSvc)
+
 	httpLogger := log.With(logger, "component", "http")
 
 	mux := http.NewServeMux()
-	mux.Handle("/v1/", product.MakeHandler(productSvc, httpLogger))
+	mux.Handle("/v1/products", product.MakeHandler(productSvc, httpLogger))
+	mux.Handle("/v1/orders", order.MakeHandler(orderSvc, httpLogger))
 
 	http.Handle("/", accessControl(mux))
 	http.Handle("/metrics", promhttp.Handler())

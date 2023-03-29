@@ -1,6 +1,8 @@
 package product
 
-import "context"
+import (
+	"context"
+)
 
 func (r *repository) Create(ctx context.Context, p *Product) (*Product, error) {
 	e, err := r.client.Product.
@@ -8,6 +10,7 @@ func (r *repository) Create(ctx context.Context, p *Product) (*Product, error) {
 		SetName(p.Name).
 		SetDescription(p.Description).
 		SetPrice(p.Price).
+		SetStock(p.Stock).
 		Save(ctx)
 	if err != nil {
 		return nil, err
@@ -18,5 +21,42 @@ func (r *repository) Create(ctx context.Context, p *Product) (*Product, error) {
 		Name:        e.Name,
 		Description: e.Description,
 		Price:       e.Price,
+		Stock:       e.Stock,
+	}, nil
+}
+
+func (r *repository) Get(ctx context.Context, id ID) (*Product, error) {
+	e, err := r.client.Product.Get(ctx, uint32(id))
+	if err != nil {
+		return nil, err
+	}
+
+	return &Product{
+		ID:          ID(e.ID),
+		Name:        e.Name,
+		Description: e.Description,
+		Price:       e.Price,
+		Stock:       e.Stock,
+	}, nil
+}
+
+func (r *repository) Update(ctx context.Context, p *Product) (*Product, error) {
+	e, err := r.client.Product.
+		UpdateOneID(uint32(p.ID)).
+		SetName(p.Name).
+		SetDescription(p.Description).
+		SetPrice(p.Price).
+		SetStock(p.Stock).
+		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Product{
+		ID:          ID(e.ID),
+		Name:        e.Name,
+		Description: e.Description,
+		Price:       e.Price,
+		Stock:       e.Stock,
 	}, nil
 }
