@@ -1,10 +1,10 @@
 package order
 
 import (
-	"clean-architecture-sample/db"
-	"clean-architecture-sample/ent"
-	"clean-architecture-sample/product"
 	"context"
+	"kit-clean-app/db"
+	"kit-clean-app/ent"
+	"kit-clean-app/product"
 )
 
 func (r *repository) Create(ctx context.Context, o *Order) (*Order, error) {
