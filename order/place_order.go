@@ -3,7 +3,6 @@ package order
 import (
 	"clean-architecture-sample/product"
 	"context"
-	"errors"
 )
 
 type placeOrderInput struct {
@@ -18,34 +17,25 @@ func (s service) PlaceOrder(ctx context.Context, ipt *placeOrderInput) (*Order, 
 		return nil, err
 	}
 
-	if curr.Stock < ipt.quantity {
-		return nil, errors.New("insufficient stock")
+	if err := curr.ReduceStock(ipt.quantity); err != nil {
+		return &Order{}, err
 	}
 
-	var order *Order
+	var order = &Order{
+		ProductID: ipt.productID,
+		UserID:    ipt.userID,
+		Quantity:  ipt.quantity,
+	}
 	if err := s.tx.Do(ctx, func(ctx context.Context) error {
 
-		stock := curr.Stock - ipt.quantity
-		pe := &product.Product{
-			ID:          curr.ID,
-			Name:        curr.Name,
-			Description: curr.Description,
-			Price:       curr.Price,
-			Stock:       stock,
-		}
-		p, err := s.productRepo.Update(ctx, pe)
+		p, err := s.productRepo.Update(ctx, curr)
 		if err != nil {
 			return err
 		}
 
-		price := p.Price * float64(ipt.quantity)
-		oe := &Order{
-			ProductID:  ipt.productID,
-			UserID:     ipt.userID,
-			Quantity:   ipt.quantity,
-			TotalPrice: price,
-		}
-		o, err := s.repo.Create(ctx, oe)
+		order.CalcTotalPrice(p.Price)
+
+		o, err := s.repo.Create(ctx, order)
 		if err != nil {
 			return err
 		}
@@ -54,7 +44,7 @@ func (s service) PlaceOrder(ctx context.Context, ipt *placeOrderInput) (*Order, 
 		return nil
 
 	}); err != nil {
-		return nil, err
+		return &Order{}, err
 	}
 
 	return &Order{

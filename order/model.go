@@ -11,3 +11,7 @@ type Order struct {
 	Quantity   uint8
 	TotalPrice float64
 }
+
+func (o *Order) CalcTotalPrice(price float64) {
+	o.TotalPrice = price * float64(o.Quantity)
+}
