@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"kit-clean-app/ent/order"
 	"kit-clean-app/ent/predicate"
 	"kit-clean-app/ent/product"
 	"time"
@@ -73,9 +74,58 @@ func (pu *ProductUpdate) AddPrice(f float64) *ProductUpdate {
 	return pu
 }
 
+// SetStock sets the "stock" field.
+func (pu *ProductUpdate) SetStock(u uint8) *ProductUpdate {
+	pu.mutation.ResetStock()
+	pu.mutation.SetStock(u)
+	return pu
+}
+
+// AddStock adds u to the "stock" field.
+func (pu *ProductUpdate) AddStock(u int8) *ProductUpdate {
+	pu.mutation.AddStock(u)
+	return pu
+}
+
+// AddOrderIDs adds the "orders" edge to the Order entity by IDs.
+func (pu *ProductUpdate) AddOrderIDs(ids ...uint32) *ProductUpdate {
+	pu.mutation.AddOrderIDs(ids...)
+	return pu
+}
+
+// AddOrders adds the "orders" edges to the Order entity.
+func (pu *ProductUpdate) AddOrders(o ...*Order) *ProductUpdate {
+	ids := make([]uint32, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return pu.AddOrderIDs(ids...)
+}
+
 // Mutation returns the ProductMutation object of the builder.
 func (pu *ProductUpdate) Mutation() *ProductMutation {
 	return pu.mutation
+}
+
+// ClearOrders clears all "orders" edges to the Order entity.
+func (pu *ProductUpdate) ClearOrders() *ProductUpdate {
+	pu.mutation.ClearOrders()
+	return pu
+}
+
+// RemoveOrderIDs removes the "orders" edge to Order entities by IDs.
+func (pu *ProductUpdate) RemoveOrderIDs(ids ...uint32) *ProductUpdate {
+	pu.mutation.RemoveOrderIDs(ids...)
+	return pu
+}
+
+// RemoveOrders removes "orders" edges to Order entities.
+func (pu *ProductUpdate) RemoveOrders(o ...*Order) *ProductUpdate {
+	ids := make([]uint32, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return pu.RemoveOrderIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -131,6 +181,11 @@ func (pu *ProductUpdate) check() error {
 			return &ValidationError{Name: "price", err: fmt.Errorf(`ent: validator failed for field "Product.price": %w`, err)}
 		}
 	}
+	if v, ok := pu.mutation.Stock(); ok {
+		if err := product.StockValidator(v); err != nil {
+			return &ValidationError{Name: "stock", err: fmt.Errorf(`ent: validator failed for field "Product.stock": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -163,6 +218,57 @@ func (pu *ProductUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := pu.mutation.AddedPrice(); ok {
 		_spec.AddField(product.FieldPrice, field.TypeFloat64, value)
+	}
+	if value, ok := pu.mutation.Stock(); ok {
+		_spec.SetField(product.FieldStock, field.TypeUint8, value)
+	}
+	if value, ok := pu.mutation.AddedStock(); ok {
+		_spec.AddField(product.FieldStock, field.TypeUint8, value)
+	}
+	if pu.mutation.OrdersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   product.OrdersTable,
+			Columns: []string{product.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint32),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedOrdersIDs(); len(nodes) > 0 && !pu.mutation.OrdersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   product.OrdersTable,
+			Columns: []string{product.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint32),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.OrdersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   product.OrdersTable,
+			Columns: []string{product.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint32),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -229,9 +335,58 @@ func (puo *ProductUpdateOne) AddPrice(f float64) *ProductUpdateOne {
 	return puo
 }
 
+// SetStock sets the "stock" field.
+func (puo *ProductUpdateOne) SetStock(u uint8) *ProductUpdateOne {
+	puo.mutation.ResetStock()
+	puo.mutation.SetStock(u)
+	return puo
+}
+
+// AddStock adds u to the "stock" field.
+func (puo *ProductUpdateOne) AddStock(u int8) *ProductUpdateOne {
+	puo.mutation.AddStock(u)
+	return puo
+}
+
+// AddOrderIDs adds the "orders" edge to the Order entity by IDs.
+func (puo *ProductUpdateOne) AddOrderIDs(ids ...uint32) *ProductUpdateOne {
+	puo.mutation.AddOrderIDs(ids...)
+	return puo
+}
+
+// AddOrders adds the "orders" edges to the Order entity.
+func (puo *ProductUpdateOne) AddOrders(o ...*Order) *ProductUpdateOne {
+	ids := make([]uint32, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return puo.AddOrderIDs(ids...)
+}
+
 // Mutation returns the ProductMutation object of the builder.
 func (puo *ProductUpdateOne) Mutation() *ProductMutation {
 	return puo.mutation
+}
+
+// ClearOrders clears all "orders" edges to the Order entity.
+func (puo *ProductUpdateOne) ClearOrders() *ProductUpdateOne {
+	puo.mutation.ClearOrders()
+	return puo
+}
+
+// RemoveOrderIDs removes the "orders" edge to Order entities by IDs.
+func (puo *ProductUpdateOne) RemoveOrderIDs(ids ...uint32) *ProductUpdateOne {
+	puo.mutation.RemoveOrderIDs(ids...)
+	return puo
+}
+
+// RemoveOrders removes "orders" edges to Order entities.
+func (puo *ProductUpdateOne) RemoveOrders(o ...*Order) *ProductUpdateOne {
+	ids := make([]uint32, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return puo.RemoveOrderIDs(ids...)
 }
 
 // Where appends a list predicates to the ProductUpdate builder.
@@ -300,6 +455,11 @@ func (puo *ProductUpdateOne) check() error {
 			return &ValidationError{Name: "price", err: fmt.Errorf(`ent: validator failed for field "Product.price": %w`, err)}
 		}
 	}
+	if v, ok := puo.mutation.Stock(); ok {
+		if err := product.StockValidator(v); err != nil {
+			return &ValidationError{Name: "stock", err: fmt.Errorf(`ent: validator failed for field "Product.stock": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -349,6 +509,57 @@ func (puo *ProductUpdateOne) sqlSave(ctx context.Context) (_node *Product, err e
 	}
 	if value, ok := puo.mutation.AddedPrice(); ok {
 		_spec.AddField(product.FieldPrice, field.TypeFloat64, value)
+	}
+	if value, ok := puo.mutation.Stock(); ok {
+		_spec.SetField(product.FieldStock, field.TypeUint8, value)
+	}
+	if value, ok := puo.mutation.AddedStock(); ok {
+		_spec.AddField(product.FieldStock, field.TypeUint8, value)
+	}
+	if puo.mutation.OrdersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   product.OrdersTable,
+			Columns: []string{product.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint32),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedOrdersIDs(); len(nodes) > 0 && !puo.mutation.OrdersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   product.OrdersTable,
+			Columns: []string{product.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint32),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.OrdersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   product.OrdersTable,
+			Columns: []string{product.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint32),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &Product{config: puo.config}
 	_spec.Assign = _node.assignValues

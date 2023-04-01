@@ -26,6 +26,29 @@ type Product struct {
 	Description string `json:"description,omitempty"`
 	// 商品価格
 	Price float64 `json:"price,omitempty"`
+	// 在庫数
+	Stock uint8 `json:"stock,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the ProductQuery when eager-loading is set.
+	Edges ProductEdges `json:"edges"`
+}
+
+// ProductEdges holds the relations/edges for other nodes in the graph.
+type ProductEdges struct {
+	// Orders holds the value of the orders edge.
+	Orders []*Order `json:"orders,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// OrdersOrErr returns the Orders value or an error if the edge
+// was not loaded in eager-loading.
+func (e ProductEdges) OrdersOrErr() ([]*Order, error) {
+	if e.loadedTypes[0] {
+		return e.Orders, nil
+	}
+	return nil, &NotLoadedError{edge: "orders"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -35,7 +58,7 @@ func (*Product) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case product.FieldPrice:
 			values[i] = new(sql.NullFloat64)
-		case product.FieldID:
+		case product.FieldID, product.FieldStock:
 			values[i] = new(sql.NullInt64)
 		case product.FieldName, product.FieldDescription:
 			values[i] = new(sql.NullString)
@@ -92,9 +115,20 @@ func (pr *Product) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pr.Price = value.Float64
 			}
+		case product.FieldStock:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field stock", values[i])
+			} else if value.Valid {
+				pr.Stock = uint8(value.Int64)
+			}
 		}
 	}
 	return nil
+}
+
+// QueryOrders queries the "orders" edge of the Product entity.
+func (pr *Product) QueryOrders() *OrderQuery {
+	return NewProductClient(pr.config).QueryOrders(pr)
 }
 
 // Update returns a builder for updating this Product.
@@ -134,6 +168,9 @@ func (pr *Product) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("price=")
 	builder.WriteString(fmt.Sprintf("%v", pr.Price))
+	builder.WriteString(", ")
+	builder.WriteString("stock=")
+	builder.WriteString(fmt.Sprintf("%v", pr.Stock))
 	builder.WriteByte(')')
 	return builder.String()
 }

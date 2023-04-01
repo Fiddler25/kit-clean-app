@@ -21,8 +21,19 @@ const (
 	FieldDescription = "description"
 	// FieldPrice holds the string denoting the price field in the database.
 	FieldPrice = "price"
+	// FieldStock holds the string denoting the stock field in the database.
+	FieldStock = "stock"
+	// EdgeOrders holds the string denoting the orders edge name in mutations.
+	EdgeOrders = "orders"
 	// Table holds the table name of the product in the database.
 	Table = "products"
+	// OrdersTable is the table that holds the orders relation/edge.
+	OrdersTable = "orders"
+	// OrdersInverseTable is the table name for the Order entity.
+	// It exists in this package in order to avoid circular dependency with the "order" package.
+	OrdersInverseTable = "orders"
+	// OrdersColumn is the table column denoting the orders relation/edge.
+	OrdersColumn = "product_id"
 )
 
 // Columns holds all SQL columns for product fields.
@@ -33,6 +44,7 @@ var Columns = []string{
 	FieldName,
 	FieldDescription,
 	FieldPrice,
+	FieldStock,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -58,4 +70,6 @@ var (
 	DescriptionValidator func(string) error
 	// PriceValidator is a validator for the "price" field. It is called by the builders before save.
 	PriceValidator func(float64) error
+	// StockValidator is a validator for the "stock" field. It is called by the builders before save.
+	StockValidator func(uint8) error
 )

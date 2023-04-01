@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"kit-clean-app/ent/order"
 	"kit-clean-app/ent/product"
 	"time"
 
@@ -74,10 +75,31 @@ func (pc *ProductCreate) SetPrice(f float64) *ProductCreate {
 	return pc
 }
 
+// SetStock sets the "stock" field.
+func (pc *ProductCreate) SetStock(u uint8) *ProductCreate {
+	pc.mutation.SetStock(u)
+	return pc
+}
+
 // SetID sets the "id" field.
 func (pc *ProductCreate) SetID(u uint32) *ProductCreate {
 	pc.mutation.SetID(u)
 	return pc
+}
+
+// AddOrderIDs adds the "orders" edge to the Order entity by IDs.
+func (pc *ProductCreate) AddOrderIDs(ids ...uint32) *ProductCreate {
+	pc.mutation.AddOrderIDs(ids...)
+	return pc
+}
+
+// AddOrders adds the "orders" edges to the Order entity.
+func (pc *ProductCreate) AddOrders(o ...*Order) *ProductCreate {
+	ids := make([]uint32, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return pc.AddOrderIDs(ids...)
 }
 
 // Mutation returns the ProductMutation object of the builder.
@@ -154,6 +176,14 @@ func (pc *ProductCreate) check() error {
 			return &ValidationError{Name: "price", err: fmt.Errorf(`ent: validator failed for field "Product.price": %w`, err)}
 		}
 	}
+	if _, ok := pc.mutation.Stock(); !ok {
+		return &ValidationError{Name: "stock", err: errors.New(`ent: missing required field "Product.stock"`)}
+	}
+	if v, ok := pc.mutation.Stock(); ok {
+		if err := product.StockValidator(v); err != nil {
+			return &ValidationError{Name: "stock", err: fmt.Errorf(`ent: validator failed for field "Product.stock": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -205,6 +235,26 @@ func (pc *ProductCreate) createSpec() (*Product, *sqlgraph.CreateSpec) {
 	if value, ok := pc.mutation.Price(); ok {
 		_spec.SetField(product.FieldPrice, field.TypeFloat64, value)
 		_node.Price = value
+	}
+	if value, ok := pc.mutation.Stock(); ok {
+		_spec.SetField(product.FieldStock, field.TypeUint8, value)
+		_node.Stock = value
+	}
+	if nodes := pc.mutation.OrdersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   product.OrdersTable,
+			Columns: []string{product.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint32),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

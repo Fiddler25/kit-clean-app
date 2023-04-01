@@ -1,10 +1,8 @@
-package product
+package order
 
 import (
 	"context"
 	"encoding/json"
-	"errors"
-	"kit-clean-app/pkg/apperr"
 	"net/http"
 
 	kitlog "github.com/go-kit/kit/log"
@@ -21,9 +19,9 @@ func MakeHandler(s Service, logger kitlog.Logger) http.Handler {
 
 	r := mux.NewRouter()
 
-	r.Methods(http.MethodPost).Path("/v1/products").Handler(kithttp.NewServer(
-		makeCreateProductEndpoint(s),
-		decodeCreateProductRequest,
+	r.Methods(http.MethodPost).Path("/v1/orders").Handler(kithttp.NewServer(
+		makePlaceOrderEndpoint(s),
+		decodePlaceOrderRequest,
 		encodeResponse,
 		opts...,
 	))
@@ -31,8 +29,8 @@ func MakeHandler(s Service, logger kitlog.Logger) http.Handler {
 	return r
 }
 
-func decodeCreateProductRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	var body createProductRequest
+func decodePlaceOrderRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var body placeOrderRequest
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		return nil, err
 	}
@@ -57,9 +55,7 @@ func encodeResponse(ctx context.Context, w http.ResponseWriter, response interfa
 func encodeError(_ context.Context, err error, w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
-	switch {
-	case errors.Is(err, apperr.ErrInvalidArgument):
-		w.WriteHeader(http.StatusBadRequest)
+	switch err {
 	default:
 		w.WriteHeader(http.StatusInternalServerError)
 	}

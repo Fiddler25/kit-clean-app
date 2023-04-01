@@ -17,9 +17,9 @@ func NewService(repo Repository) Service {
 var _ Service = MockService{}
 
 type MockService struct {
-	CreateProductFunc func(ctx context.Context) (*Product, error)
+	CreateProductFunc func(ctx context.Context, ipt createProductInput) (*Product, error)
 }
 
 func (m MockService) CreateProduct(ctx context.Context, ipt createProductInput) (*Product, error) {
-	return m.CreateProductFunc(ctx)
+	return m.CreateProductFunc(ctx, ipt)
 }

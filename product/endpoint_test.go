@@ -1,9 +1,10 @@
-package product_test
+package product
 
 import (
 	"context"
 	"errors"
-	"kit-clean-app/product"
+	"kit-clean-app/pkg/apperr"
+	"kit-clean-app/pkg/test"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -13,83 +14,104 @@ import (
 func TestMakeCreateProductEndpoint(t *testing.T) {
 	t.Parallel()
 
-	svc := &product.MockService{}
-
 	type give struct {
-		req product.ExportCreateProductRequest
-		f   product.MockService
+		req createProductRequest
+		svc MockService
 	}
 
 	tests := []struct {
 		name string
 		give give
-		want product.ExportCreateProductResponse
+		want createProductResponse
 	}{
 		{
-			"【OK】正常系",
+			"正常終了",
 			give{
-				req: product.ExportCreateProductRequest{
+				req: createProductRequest{
 					Name:        "コーヒー",
 					Description: "豆 深煎り 200g",
 					Price:       1500,
+					Stock:       5,
 				},
-				f: product.MockService{
-					CreateProductFunc: func(ctx context.Context) (*product.Product, error) {
-						return &product.Product{
+				svc: MockService{
+					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*Product, error) {
+						return &Product{
 							ID:          1,
 							Name:        "コーヒー",
 							Description: "豆 深煎り 200g",
 							Price:       1500,
+							Stock:       5,
 						}, nil
 					},
 				},
 			},
-			product.ExportCreateProductResponse{
+			createProductResponse{
 				ID:          1,
 				Name:        "コーヒー",
 				Description: "豆 深煎り 200g",
 				Price:       1500,
+				Stock:       5,
 			},
 		},
 		{
-			"【NG】nameが空文字",
+			"nameが空文字",
 			give{
-				req: product.ExportCreateProductRequest{
+				req: createProductRequest{
 					Name:        "",
 					Description: "豆 深煎り 200g",
 					Price:       1500,
+					Stock:       5,
 				},
 			},
-			product.ExportCreateProductResponse{
-				Err: product.ErrInvalidArgument,
+			createProductResponse{
+				Err: apperr.ErrInvalidArgument,
 			},
 		},
 		{
-			"【NG】priceが0未満",
+			"priceが0未満",
 			give{
-				req: product.ExportCreateProductRequest{
+				req: createProductRequest{
 					Name:        "コーヒー",
 					Description: "豆 深煎り 200g",
 					Price:       -1,
+					Stock:       5,
 				},
 			},
-			product.ExportCreateProductResponse{
-				Err: product.ErrInvalidArgument,
+			createProductResponse{
+				Err: apperr.ErrInvalidArgument,
+			},
+		},
+		{
+			"その他のエラー",
+			give{
+				req: createProductRequest{
+					Name:        "コーヒー",
+					Description: "豆 深煎り 200g",
+					Price:       1500,
+					Stock:       5,
+				},
+				svc: MockService{
+					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*Product, error) {
+						return &Product{}, test.ErrDummy
+					},
+				},
+			},
+			createProductResponse{
+				Err: test.ErrDummy,
 			},
 		},
 	}
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			svc.CreateProductFunc = tt.give.f.CreateProductFunc
 
-			resp, _ := product.ExportMakeCreateProductEndpoint(svc)(context.Background(), tt.give.req)
-			got, ok := resp.(product.ExportCreateProductResponse)
+			resp, _ := makeCreateProductEndpoint(tt.give.svc)(context.Background(), tt.give.req)
+			got, ok := resp.(createProductResponse)
 			if !ok {
 				t.Errorf("unexpected response = %v", resp)
 			}
 
-			opt := cmpopts.IgnoreFields(product.ExportCreateProductResponse{}, "Err")
+			opt := cmpopts.IgnoreFields(createProductResponse{}, "Err")
 			if diff := cmp.Diff(tt.want, got, opt); diff != "" {
 				t.Errorf("response mismatch (-want +got)\n%s", diff)
 			}

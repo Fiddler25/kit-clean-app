@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"kit-clean-app/ent/order"
 	"kit-clean-app/ent/product"
 	"kit-clean-app/ent/schema"
 	"time"
@@ -12,6 +13,25 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	orderMixin := schema.Order{}.Mixin()
+	orderMixinFields0 := orderMixin[0].Fields()
+	_ = orderMixinFields0
+	orderFields := schema.Order{}.Fields()
+	_ = orderFields
+	// orderDescCreated is the schema descriptor for created field.
+	orderDescCreated := orderMixinFields0[0].Descriptor()
+	// order.DefaultCreated holds the default value on creation for the created field.
+	order.DefaultCreated = orderDescCreated.Default.(func() time.Time)
+	// orderDescUpdated is the schema descriptor for updated field.
+	orderDescUpdated := orderMixinFields0[1].Descriptor()
+	// order.DefaultUpdated holds the default value on creation for the updated field.
+	order.DefaultUpdated = orderDescUpdated.Default.(func() time.Time)
+	// order.UpdateDefaultUpdated holds the default value on update for the updated field.
+	order.UpdateDefaultUpdated = orderDescUpdated.UpdateDefault.(func() time.Time)
+	// orderDescTotalPrice is the schema descriptor for total_price field.
+	orderDescTotalPrice := orderFields[4].Descriptor()
+	// order.TotalPriceValidator is a validator for the "total_price" field. It is called by the builders before save.
+	order.TotalPriceValidator = orderDescTotalPrice.Validators[0].(func(float64) error)
 	productMixin := schema.Product{}.Mixin()
 	productMixinFields0 := productMixin[0].Fields()
 	_ = productMixinFields0
@@ -39,4 +59,8 @@ func init() {
 	productDescPrice := productFields[3].Descriptor()
 	// product.PriceValidator is a validator for the "price" field. It is called by the builders before save.
 	product.PriceValidator = productDescPrice.Validators[0].(func(float64) error)
+	// productDescStock is the schema descriptor for stock field.
+	productDescStock := productFields[4].Descriptor()
+	// product.StockValidator is a validator for the "stock" field. It is called by the builders before save.
+	product.StockValidator = productDescStock.Validators[0].(func(uint8) error)
 }
