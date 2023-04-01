@@ -1,7 +1,7 @@
 package order_test
 
 import (
-	"clean-architecture-sample/order"
+	"kit-clean-app/order"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -9,7 +9,7 @@ import (
 
 func TestOrder_CalcTotalPrice(t *testing.T) {
 
-	t.Run("【OK】正常系", func(t *testing.T) {
+	t.Run("正常終了", func(t *testing.T) {
 		o := &order.Order{Quantity: 3}
 		o.CalcTotalPrice(1000)
 

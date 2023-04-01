@@ -3,9 +3,9 @@
 package hook
 
 import (
-	"clean-architecture-sample/ent"
 	"context"
 	"fmt"
+	"kit-clean-app/ent"
 )
 
 // The OrderFunc type is an adapter to allow the use of ordinary

@@ -3,11 +3,11 @@
 package ent
 
 import (
-	"clean-architecture-sample/ent/order"
-	"clean-architecture-sample/ent/predicate"
-	"clean-architecture-sample/ent/product"
 	"context"
 	"fmt"
+	"kit-clean-app/ent/order"
+	"kit-clean-app/ent/predicate"
+	"kit-clean-app/ent/product"
 	"math"
 
 	"entgo.io/ent/dialect/sql"

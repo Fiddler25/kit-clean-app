@@ -2,7 +2,7 @@
 
 package runtime
 
-// The schema-stitching logic is generated in clean-architecture-sample/ent/runtime.go
+// The schema-stitching logic is generated in kit-clean-app/ent/runtime.go
 
 const (
 	Version = "v0.11.10"                                        // Version of ent codegen.

@@ -1,8 +1,8 @@
 package product_test
 
 import (
-	"clean-architecture-sample/product"
 	"errors"
+	"kit-clean-app/product"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -29,7 +29,7 @@ func TestProduct_ReduceStock(t *testing.T) {
 		want want
 	}{
 		{
-			"【OK】正常系",
+			"正常終了",
 			give{
 				product: &product.Product{
 					Stock: 5,
@@ -41,7 +41,7 @@ func TestProduct_ReduceStock(t *testing.T) {
 			},
 		},
 		{
-			"【OK】在庫数が注文数と等しい",
+			"在庫数が注文数と等しい",
 			give{
 				product: &product.Product{
 					Stock: 5,
@@ -53,7 +53,7 @@ func TestProduct_ReduceStock(t *testing.T) {
 			},
 		},
 		{
-			"【NG】在庫数が注文数より少ない",
+			"在庫数が注文数より少ない",
 			give{
 				product: &product.Product{
 					Stock: 5,

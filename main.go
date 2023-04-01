@@ -1,11 +1,12 @@
 package main
 
 import (
-	"clean-architecture-sample/db"
-	"clean-architecture-sample/order"
-	"clean-architecture-sample/product"
+	"context"
 	"flag"
 	"fmt"
+	"kit-clean-app/db"
+	"kit-clean-app/order"
+	"kit-clean-app/product"
 	"net/http"
 	"os"
 	"os/signal"
@@ -27,15 +28,14 @@ func main() {
 	logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stderr))
 	logger = log.With(logger, "ts", log.DefaultTimestampUTC)
 
-	var tx db.Tx
-	client := db.New()
+	idb, ctx := db.New()
 
-	productRepo := product.NewRepository(client)
+	productRepo := product.NewRepository(idb.Client)
 	productSvc := product.NewService(productRepo)
 	productSvc = product.NewLoggingService(log.With(logger, "component", "product"), productSvc)
 
-	orderRepo := order.NewRepository(client)
-	orderSvc := order.NewService(tx, orderRepo, productRepo)
+	orderRepo := order.NewRepository(idb.Client)
+	orderSvc := order.NewService(idb, orderRepo, productRepo)
 	orderSvc = order.NewLoggingService(log.With(logger, "component", "order"), orderSvc)
 
 	httpLogger := log.With(logger, "component", "http")
@@ -44,7 +44,7 @@ func main() {
 	mux.Handle("/v1/products", product.MakeHandler(productSvc, httpLogger))
 	mux.Handle("/v1/orders", order.MakeHandler(orderSvc, httpLogger))
 
-	http.Handle("/", accessControl(mux))
+	http.Handle("/", accessControl(mux, ctx))
 	http.Handle("/metrics", promhttp.Handler())
 
 	errs := make(chan error, 2)
@@ -61,7 +61,7 @@ func main() {
 	logger.Log("terminated", <-errs)
 }
 
-func accessControl(h http.Handler) http.Handler {
+func accessControl(h http.Handler, ctx context.Context) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
@@ -71,6 +71,6 @@ func accessControl(h http.Handler) http.Handler {
 			return
 		}
 
-		h.ServeHTTP(w, r)
+		h.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

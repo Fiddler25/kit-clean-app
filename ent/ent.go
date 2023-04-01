@@ -3,11 +3,11 @@
 package ent
 
 import (
-	"clean-architecture-sample/ent/order"
-	"clean-architecture-sample/ent/product"
 	"context"
 	"errors"
 	"fmt"
+	"kit-clean-app/ent/order"
+	"kit-clean-app/ent/product"
 	"reflect"
 
 	"entgo.io/ent"

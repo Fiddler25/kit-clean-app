@@ -23,6 +23,7 @@ func (l *loggingService) CreateProduct(ctx context.Context, ipt createProductInp
 			"name", ipt.Name,
 			"description", ipt.Description,
 			"price", ipt.Price,
+			"stock", ipt.Stock,
 			"took", time.Since(begin),
 			"err", err,
 		)

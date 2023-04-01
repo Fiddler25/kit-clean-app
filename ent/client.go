@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"log"
 
-	"clean-architecture-sample/ent/migrate"
+	"kit-clean-app/ent/migrate"
 
-	"clean-architecture-sample/ent/order"
-	"clean-architecture-sample/ent/product"
+	"kit-clean-app/ent/order"
+	"kit-clean-app/ent/product"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"

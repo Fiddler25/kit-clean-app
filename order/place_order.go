@@ -1,8 +1,8 @@
 package order
 
 import (
-	"clean-architecture-sample/product"
 	"context"
+	"kit-clean-app/product"
 )
 
 type placeOrderInput struct {

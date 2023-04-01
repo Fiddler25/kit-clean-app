@@ -3,8 +3,8 @@
 package ent
 
 import (
-	"clean-architecture-sample/ent/product"
 	"fmt"
+	"kit-clean-app/ent/product"
 	"strings"
 	"time"
 

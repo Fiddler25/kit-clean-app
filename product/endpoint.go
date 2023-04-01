@@ -2,19 +2,18 @@ package product
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"kit-clean-app/pkg/apperr"
 
 	"github.com/go-kit/kit/endpoint"
 )
-
-var ErrInvalidArgument = errors.New("invalid argument")
 
 type (
 	createProductRequest struct {
 		Name        string  `json:"name"`
 		Description string  `json:"description"`
 		Price       float64 `json:"price"`
+		Stock       uint8   `json:"stock"`
 	}
 
 	createProductResponse struct {
@@ -22,6 +21,7 @@ type (
 		Name        string  `json:"name,omitempty"`
 		Description string  `json:"description,omitempty"`
 		Price       float64 `json:"price,omitempty"`
+		Stock       uint8   `json:"stock,omitempty"`
 		Err         error   `json:"error,omitempty"`
 	}
 )
@@ -33,16 +33,17 @@ func makeCreateProductEndpoint(s Service) endpoint.Endpoint {
 		req := request.(createProductRequest)
 
 		if req.Name == "" {
-			return createProductResponse{Err: fmt.Errorf("%w. %s", ErrInvalidArgument, "name is required")}, nil
+			return createProductResponse{Err: fmt.Errorf("%w. %s", apperr.ErrInvalidArgument, "name is required")}, nil
 		}
 		if req.Price < 0 {
-			return createProductResponse{Err: fmt.Errorf("%w. %s", ErrInvalidArgument, "price is greater than or equal to 0")}, nil
+			return createProductResponse{Err: fmt.Errorf("%w. %s", apperr.ErrInvalidArgument, "price is greater than or equal to 0")}, nil
 		}
 
 		ipt := createProductInput{
 			Name:        req.Name,
 			Description: req.Description,
 			Price:       req.Price,
+			Stock:       req.Stock,
 		}
 		opt, err := s.CreateProduct(ctx, ipt)
 
@@ -51,6 +52,7 @@ func makeCreateProductEndpoint(s Service) endpoint.Endpoint {
 			Name:        opt.Name,
 			Description: opt.Description,
 			Price:       opt.Price,
+			Stock:       opt.Stock,
 			Err:         err,
 		}, nil
 	}

@@ -1,32 +1,19 @@
 package order
 
 import (
-	"clean-architecture-sample/product"
 	"context"
 	"errors"
+	"kit-clean-app/pkg/test"
+	"kit-clean-app/product"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 )
 
-type MockTx struct {
-	DoFunc func(context.Context, func(context.Context) error) error
-}
-
-func (m MockTx) Do(ctx context.Context, f func(ctx context.Context) error) error {
-	return m.DoFunc(ctx, f)
-}
-
 func TestService_PlaceOrder(t *testing.T) {
 	t.Parallel()
 
-	tx := &MockTx{
-		DoFunc: func(ctx context.Context, f func(context.Context) error) error {
-			return f(ctx)
-		},
-	}
-
-	var ErrDummy = errors.New("dummy-error")
+	tx := test.Tx()
 
 	type (
 		give struct {
@@ -47,7 +34,7 @@ func TestService_PlaceOrder(t *testing.T) {
 		want want
 	}{
 		{
-			"【OK】正常終了",
+			"正常終了",
 			give{
 				ipt: &placeOrderInput{
 					productID: 1,
@@ -97,7 +84,7 @@ func TestService_PlaceOrder(t *testing.T) {
 			},
 		},
 		{
-			"【NG】productRepo.Update()でエラー発生",
+			"productRepo.Update()でエラー発生",
 			give{
 				ipt: &placeOrderInput{
 					productID: 1,
@@ -115,13 +102,13 @@ func TestService_PlaceOrder(t *testing.T) {
 						}, nil
 					},
 					UpdateFunc: func(ctx context.Context, p *product.Product) (*product.Product, error) {
-						return &product.Product{}, ErrDummy
+						return &product.Product{}, test.ErrDummy
 					},
 				},
 			},
 			want{
 				order: &Order{},
-				err:   ErrDummy,
+				err:   test.ErrDummy,
 			},
 		},
 		// ...

@@ -17,16 +17,14 @@ func MakeHandler(s Service, logger kitlog.Logger) http.Handler {
 		kithttp.ServerErrorEncoder(encodeError),
 	}
 
-	placeOrderHandler := kithttp.NewServer(
+	r := mux.NewRouter()
+
+	r.Methods(http.MethodPost).Path("/v1/orders").Handler(kithttp.NewServer(
 		makePlaceOrderEndpoint(s),
 		decodePlaceOrderRequest,
 		encodeResponse,
 		opts...,
-	)
-
-	r := mux.NewRouter()
-
-	r.Methods(http.MethodPost).Path("/v1/orders").Handler(placeOrderHandler)
+	))
 
 	return r
 }

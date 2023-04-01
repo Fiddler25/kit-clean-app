@@ -2,6 +2,7 @@ package order
 
 import (
 	"clean-architecture-sample/db"
+	"clean-architecture-sample/ent"
 	"clean-architecture-sample/product"
 	"context"
 )
@@ -18,11 +19,15 @@ func (r *repository) Create(ctx context.Context, o *Order) (*Order, error) {
 		return nil, err
 	}
 
+	return entToOrder(e), nil
+}
+
+func entToOrder(e *ent.Order) *Order {
 	return &Order{
 		ID:         ID(e.ID),
 		ProductID:  product.ID(e.ProductID),
 		UserID:     uint32(e.UserID),
 		Quantity:   e.Quantity,
 		TotalPrice: e.TotalPrice,
-	}, nil
+	}
 }

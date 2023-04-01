@@ -3,9 +3,9 @@
 package ent
 
 import (
-	"clean-architecture-sample/ent/order"
-	"clean-architecture-sample/ent/predicate"
 	"context"
+	"kit-clean-app/ent/order"
+	"kit-clean-app/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"

@@ -1,21 +1,17 @@
 package db
 
 import (
-	"clean-architecture-sample/ent"
 	"context"
 	"fmt"
+	"kit-clean-app/ent"
 )
-
-type tx struct {
-	*ent.Client
-}
 
 type Tx interface {
 	Do(context.Context, func(context.Context) error) error
 }
 
-func (t *tx) Do(ctx context.Context, f func(ctx context.Context) error) error {
-	tx, err := t.Tx(ctx)
+func (d *DB) Do(ctx context.Context, f func(ctx context.Context) error) error {
+	tx, err := d.Tx(ctx)
 	if err != nil {
 		return err
 	}

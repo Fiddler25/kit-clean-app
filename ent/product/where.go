@@ -3,7 +3,7 @@
 package product
 
 import (
-	"clean-architecture-sample/ent/predicate"
+	"kit-clean-app/ent/predicate"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
