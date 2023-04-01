@@ -3,8 +3,8 @@
 package ent
 
 import (
-	"clean-architecture-sample/ent/product"
-	"clean-architecture-sample/ent/schema"
+	"kit-clean-app/ent/product"
+	"kit-clean-app/ent/schema"
 	"time"
 )
 

@@ -1,9 +1,9 @@
 package product_test
 
 import (
-	"clean-architecture-sample/product"
 	"context"
 	"errors"
+	"kit-clean-app/product"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"

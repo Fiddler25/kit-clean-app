@@ -3,12 +3,12 @@
 package enttest
 
 import (
-	"clean-architecture-sample/ent"
 	"context"
+	"kit-clean-app/ent"
 	// required by schema hooks.
-	_ "clean-architecture-sample/ent/runtime"
+	_ "kit-clean-app/ent/runtime"
 
-	"clean-architecture-sample/ent/migrate"
+	"kit-clean-app/ent/migrate"
 
 	"entgo.io/ent/dialect/sql/schema"
 )

@@ -2,10 +2,10 @@ package product_test
 
 import (
 	"bytes"
-	"clean-architecture-sample/product"
 	"context"
 	"encoding/json"
 	"errors"
+	"kit-clean-app/product"
 	"net/http"
 	"net/http/httptest"
 	"testing"

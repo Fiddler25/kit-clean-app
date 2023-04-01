@@ -3,10 +3,10 @@
 package ent
 
 import (
-	"clean-architecture-sample/ent/product"
 	"context"
 	"errors"
 	"fmt"
+	"kit-clean-app/ent/product"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"

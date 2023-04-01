@@ -1,10 +1,10 @@
 package main
 
 import (
-	"clean-architecture-sample/db"
-	"clean-architecture-sample/product"
 	"flag"
 	"fmt"
+	"kit-clean-app/db"
+	"kit-clean-app/product"
 	"net/http"
 	"os"
 	"os/signal"

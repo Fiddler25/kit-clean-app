@@ -1,8 +1,8 @@
 package product
 
 import (
-	"clean-architecture-sample/ent"
 	"context"
+	"kit-clean-app/ent"
 )
 
 type Repository interface {

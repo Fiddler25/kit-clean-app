@@ -1,13 +1,13 @@
 package db
 
 import (
-	"clean-architecture-sample/ent"
 	"context"
+	"kit-clean-app/ent"
 	"log"
 )
 
 func New() *ent.Client {
-	client, err := ent.Open("mysql", "root@tcp(127.0.0.1:13306)/clean-architecture-sample?charset=utf8mb4&parseTime=True")
+	client, err := ent.Open("mysql", "root@tcp(127.0.0.1:13306)/kit-clean-app?charset=utf8mb4&parseTime=True")
 	if err != nil {
 		log.Fatalf("failed connecting to mysql: %v", err)
 	}
