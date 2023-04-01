@@ -12,9 +12,11 @@ type Product struct {
 	Stock       uint8
 }
 
+var ErrInsufficientStock = errors.New("insufficient stock")
+
 func (p *Product) ReduceStock(quantity uint8) error {
 	if p.Stock < quantity {
-		return errors.New("insufficient stock")
+		return ErrInsufficientStock
 	}
 	p.Stock -= quantity
 
