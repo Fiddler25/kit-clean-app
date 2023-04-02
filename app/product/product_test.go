@@ -2,7 +2,7 @@ package product_test
 
 import (
 	"errors"
-	"kit-clean-app/product"
+	"kit-clean-app/app/product"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"

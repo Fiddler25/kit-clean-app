@@ -1,6 +1,6 @@
 package order
 
-import "kit-clean-app/product"
+import "kit-clean-app/app/product"
 
 type ID uint32
 

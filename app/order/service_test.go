@@ -3,8 +3,8 @@ package order
 import (
 	"context"
 	"errors"
+	"kit-clean-app/app/product"
 	"kit-clean-app/pkg/test"
-	"kit-clean-app/product"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"

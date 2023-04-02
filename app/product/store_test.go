@@ -3,9 +3,9 @@ package product_test
 import (
 	"context"
 	"errors"
+	"kit-clean-app/app/product"
 	"kit-clean-app/ent"
 	"kit-clean-app/ent/enttest"
-	"kit-clean-app/product"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"

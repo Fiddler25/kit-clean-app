@@ -2,8 +2,8 @@ package order
 
 import (
 	"context"
+	"kit-clean-app/app/product"
 	"kit-clean-app/db"
-	"kit-clean-app/product"
 )
 
 type Service interface {

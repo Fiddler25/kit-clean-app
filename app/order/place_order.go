@@ -2,7 +2,7 @@ package order
 
 import (
 	"context"
-	"kit-clean-app/product"
+	"kit-clean-app/app/product"
 )
 
 type placeOrderInput struct {

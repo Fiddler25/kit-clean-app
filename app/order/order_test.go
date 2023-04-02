@@ -1,7 +1,7 @@
 package order_test
 
 import (
-	"kit-clean-app/order"
+	"kit-clean-app/app/order"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"

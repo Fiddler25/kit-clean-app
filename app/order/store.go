@@ -2,9 +2,9 @@ package order
 
 import (
 	"context"
+	"kit-clean-app/app/product"
 	"kit-clean-app/db"
 	"kit-clean-app/ent"
-	"kit-clean-app/product"
 )
 
 func (r *repository) Create(ctx context.Context, o *Order) (*Order, error) {
