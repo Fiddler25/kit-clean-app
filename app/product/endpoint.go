@@ -27,6 +27,18 @@ type (
 	}
 )
 
+type (
+	convertCurrencyRequest struct {
+		ID           model.ProductID `json:"id"`
+		CurrencyCode string          `json:"currency_code"`
+	}
+
+	convertCurrencyResponse struct {
+		Product *ReadProduct `json:"product,omitempty"`
+		Err     error        `json:"error,omitempty"`
+	}
+)
+
 func (r createProductResponse) error() error { return r.Err }
 
 func makeCreateProductEndpoint(s Service) endpoint.Endpoint {
@@ -55,6 +67,32 @@ func makeCreateProductEndpoint(s Service) endpoint.Endpoint {
 			Price:       opt.Price,
 			Stock:       opt.Stock,
 			Err:         err,
+		}, nil
+	}
+}
+
+func (r convertCurrencyResponse) error() error { return r.Err }
+
+func makeConvertCurrencyEndpoint(s Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(convertCurrencyRequest)
+
+		if req.ID == 0 {
+			return convertCurrencyResponse{Err: fmt.Errorf("%w. %s", apperr.ErrInvalidArgument, "id is required")}, nil
+		}
+		if req.CurrencyCode == "" {
+			return convertCurrencyResponse{Err: fmt.Errorf("%w. %s", apperr.ErrInvalidArgument, "currency code is required")}, nil
+		}
+
+		ipt := convertCurrencyInput{
+			id:           req.ID,
+			currencyCode: req.CurrencyCode,
+		}
+		opt, err := s.ConvertCurrency(ctx, ipt)
+
+		return convertCurrencyResponse{
+			Product: opt,
+			Err:     err,
 		}, nil
 	}
 }

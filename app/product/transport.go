@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"kit-clean-app/app/model"
 	"kit-clean-app/pkg/apperr"
 	"net/http"
+	"strconv"
 
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/transport"
@@ -27,6 +29,12 @@ func MakeHandler(s Service, logger kitlog.Logger) http.Handler {
 		encodeResponse,
 		opts...,
 	))
+	r.Methods(http.MethodGet).Path("/v1/products/{id}/convert-currency").Handler(kithttp.NewServer(
+		makeConvertCurrencyEndpoint(s),
+		decodeConvertCurrencyRequest,
+		encodeResponse,
+		opts...,
+	))
 
 	return r
 }
@@ -36,6 +44,23 @@ func decodeCreateProductRequest(_ context.Context, r *http.Request) (interface{}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		return nil, err
 	}
+
+	return body, nil
+}
+
+func decodeConvertCurrencyRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	vars := mux.Vars(r)
+	id, ok := vars["id"]
+	if !ok {
+		return nil, apperr.ErrBadRoute
+	}
+
+	var body convertCurrencyRequest
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		return nil, err
+	}
+	productID, _ := strconv.ParseUint(id, 10, 32)
+	body.ID = model.ProductID(uint32(productID))
 
 	return body, nil
 }
