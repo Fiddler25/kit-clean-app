@@ -3,6 +3,7 @@ package product_test
 import (
 	"context"
 	"errors"
+	"kit-clean-app/app/model"
 	"kit-clean-app/app/product"
 	"kit-clean-app/ent"
 	"kit-clean-app/ent/enttest"
@@ -20,7 +21,7 @@ func TestRepository_Get(t *testing.T) {
 
 	repo := product.NewRepository(client)
 
-	e := &product.Product{
+	e := &model.Product{
 		Name:        "コーヒー",
 		Description: "豆 深煎り 200g",
 		Price:       1500,
@@ -31,20 +32,20 @@ func TestRepository_Get(t *testing.T) {
 	}
 
 	type want struct {
-		product *product.Product
+		product *model.Product
 		err     error
 	}
 
 	tests := []struct {
 		name string
-		id   product.ID
+		id   model.ProductID
 		want want
 	}{
 		{
 			"正常終了",
 			1,
 			want{
-				product: &product.Product{
+				product: &model.Product{
 					ID:          1,
 					Name:        "コーヒー",
 					Description: "豆 深煎り 200g",

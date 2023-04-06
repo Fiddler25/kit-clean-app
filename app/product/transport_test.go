@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"kit-clean-app/app/model"
 	"kit-clean-app/pkg/apperr"
 	"kit-clean-app/pkg/test"
 	"net/http"
@@ -15,12 +16,12 @@ import (
 )
 
 type testCreateProductResponse struct {
-	ID          ID      `json:"id"`
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	Price       float64 `json:"price"`
-	Stock       uint8   `json:"stock"`
-	Err         string  `json:"error"`
+	ID          model.ProductID `json:"id"`
+	Name        string          `json:"name"`
+	Description string          `json:"description"`
+	Price       float64         `json:"price"`
+	Stock       uint8           `json:"stock"`
+	Err         string          `json:"error"`
 }
 
 func TestMakeHandler(t *testing.T) {
@@ -53,8 +54,8 @@ func TestMakeHandler(t *testing.T) {
 					"stock":       5,
 				},
 				svc: MockService{
-					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*Product, error) {
-						return &Product{
+					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*model.Product, error) {
+						return &model.Product{
 							ID:          1,
 							Name:        "コーヒー",
 							Description: "豆 深煎り 200g",
@@ -83,8 +84,8 @@ func TestMakeHandler(t *testing.T) {
 					"price": 1500,
 				},
 				svc: MockService{
-					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*Product, error) {
-						return &Product{}, apperr.ErrInvalidArgument
+					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*model.Product, error) {
+						return &model.Product{}, apperr.ErrInvalidArgument
 					},
 				},
 			},
@@ -103,8 +104,8 @@ func TestMakeHandler(t *testing.T) {
 					"price": 1500,
 				},
 				svc: MockService{
-					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*Product, error) {
-						return &Product{}, test.ErrDummy
+					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*model.Product, error) {
+						return &model.Product{}, test.ErrDummy
 					},
 				},
 			},

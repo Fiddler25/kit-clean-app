@@ -1,9 +1,12 @@
 package product
 
-import "context"
+import (
+	"context"
+	"kit-clean-app/app/model"
+)
 
 type Service interface {
-	CreateProduct(ctx context.Context, ipt createProductInput) (*Product, error)
+	CreateProduct(ctx context.Context, ipt createProductInput) (*model.Product, error)
 }
 
 type service struct {
@@ -17,9 +20,9 @@ func NewService(repo Repository) Service {
 var _ Service = MockService{}
 
 type MockService struct {
-	CreateProductFunc func(ctx context.Context, ipt createProductInput) (*Product, error)
+	CreateProductFunc   func(ctx context.Context, ipt createProductInput) (*model.Product, error)
 }
 
-func (m MockService) CreateProduct(ctx context.Context, ipt createProductInput) (*Product, error) {
+func (m MockService) CreateProduct(ctx context.Context, ipt createProductInput) (*model.Product, error) {
 	return m.CreateProductFunc(ctx, ipt)
 }

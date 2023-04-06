@@ -3,6 +3,7 @@ package product
 import (
 	"context"
 	"errors"
+	"kit-clean-app/app/model"
 	"kit-clean-app/pkg/apperr"
 	"kit-clean-app/pkg/test"
 	"testing"
@@ -34,8 +35,8 @@ func TestMakeCreateProductEndpoint(t *testing.T) {
 					Stock:       5,
 				},
 				svc: MockService{
-					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*Product, error) {
-						return &Product{
+					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*model.Product, error) {
+						return &model.Product{
 							ID:          1,
 							Name:        "コーヒー",
 							Description: "豆 深煎り 200g",
@@ -91,8 +92,8 @@ func TestMakeCreateProductEndpoint(t *testing.T) {
 					Stock:       5,
 				},
 				svc: MockService{
-					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*Product, error) {
-						return &Product{}, test.ErrDummy
+					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*model.Product, error) {
+						return &model.Product{}, test.ErrDummy
 					},
 				},
 			},

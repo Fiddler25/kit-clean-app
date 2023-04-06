@@ -2,11 +2,12 @@ package order
 
 import (
 	"context"
+	"kit-clean-app/app/model"
 	"kit-clean-app/ent"
 )
 
 type Repository interface {
-	Create(ctx context.Context, e *Order) (*Order, error)
+	Create(ctx context.Context, e *model.Order) (*model.Order, error)
 }
 
 type repository struct {
@@ -20,9 +21,9 @@ func NewRepository(client *ent.Client) Repository {
 var _ Repository = MockRepository{}
 
 type MockRepository struct {
-	CreateFunc func(ctx context.Context, e *Order) (*Order, error)
+	CreateFunc func(ctx context.Context, e *model.Order) (*model.Order, error)
 }
 
-func (m MockRepository) Create(ctx context.Context, e *Order) (*Order, error) {
+func (m MockRepository) Create(ctx context.Context, e *model.Order) (*model.Order, error) {
 	return m.CreateFunc(ctx, e)
 }

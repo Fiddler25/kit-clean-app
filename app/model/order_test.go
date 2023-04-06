@@ -1,7 +1,7 @@
-package order_test
+package model_test
 
 import (
-	"kit-clean-app/app/order"
+	"kit-clean-app/app/model"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -10,7 +10,7 @@ import (
 func TestOrder_CalcTotalPrice(t *testing.T) {
 
 	t.Run("正常終了", func(t *testing.T) {
-		o := &order.Order{Quantity: 3}
+		o := &model.Order{Quantity: 3}
 		o.CalcTotalPrice(1000)
 
 		if diff := cmp.Diff(o.TotalPrice, float64(3000)); diff != "" {

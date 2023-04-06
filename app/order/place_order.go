@@ -2,26 +2,26 @@ package order
 
 import (
 	"context"
-	"kit-clean-app/app/product"
+	"kit-clean-app/app/model"
 )
 
 type placeOrderInput struct {
-	productID product.ID
+	productID model.ProductID
 	userID    uint32
 	quantity  uint8
 }
 
-func (s service) PlaceOrder(ctx context.Context, ipt *placeOrderInput) (*Order, error) {
+func (s service) PlaceOrder(ctx context.Context, ipt *placeOrderInput) (*model.Order, error) {
 	curr, err := s.productRepo.Get(ctx, ipt.productID)
 	if err != nil {
 		return nil, err
 	}
 
 	if err := curr.ReduceStock(ipt.quantity); err != nil {
-		return &Order{}, err
+		return &model.Order{}, err
 	}
 
-	var order = &Order{
+	var order = &model.Order{
 		ProductID: ipt.productID,
 		UserID:    ipt.userID,
 		Quantity:  ipt.quantity,
@@ -44,10 +44,10 @@ func (s service) PlaceOrder(ctx context.Context, ipt *placeOrderInput) (*Order, 
 		return nil
 
 	}); err != nil {
-		return &Order{}, err
+		return &model.Order{}, err
 	}
 
-	return &Order{
+	return &model.Order{
 		ID:         order.ID,
 		ProductID:  order.ProductID,
 		UserID:     order.UserID,

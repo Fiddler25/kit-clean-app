@@ -3,6 +3,7 @@ package product
 import (
 	"context"
 	"fmt"
+	"kit-clean-app/app/model"
 	"kit-clean-app/pkg/apperr"
 
 	"github.com/go-kit/kit/endpoint"
@@ -17,12 +18,12 @@ type (
 	}
 
 	createProductResponse struct {
-		ID          ID      `json:"id,omitempty"`
-		Name        string  `json:"name,omitempty"`
-		Description string  `json:"description,omitempty"`
-		Price       float64 `json:"price,omitempty"`
-		Stock       uint8   `json:"stock,omitempty"`
-		Err         error   `json:"error,omitempty"`
+		ID          model.ProductID `json:"id,omitempty"`
+		Name        string          `json:"name,omitempty"`
+		Description string          `json:"description,omitempty"`
+		Price       float64         `json:"price,omitempty"`
+		Stock       uint8           `json:"stock,omitempty"`
+		Err         error           `json:"error,omitempty"`
 	}
 )
 

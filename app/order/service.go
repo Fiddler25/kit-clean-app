@@ -2,12 +2,13 @@ package order
 
 import (
 	"context"
+	"kit-clean-app/app/model"
 	"kit-clean-app/app/product"
 	"kit-clean-app/db"
 )
 
 type Service interface {
-	PlaceOrder(ctx context.Context, ipt *placeOrderInput) (*Order, error)
+	PlaceOrder(ctx context.Context, ipt *placeOrderInput) (*model.Order, error)
 }
 
 type service struct {
@@ -27,9 +28,9 @@ func NewService(tx db.Tx, repo Repository, productRepo product.Repository) Servi
 var _ Service = MockService{}
 
 type MockService struct {
-	PlaceOrderFunc func(ctx context.Context, ipt *placeOrderInput) (*Order, error)
+	PlaceOrderFunc func(ctx context.Context, ipt *placeOrderInput) (*model.Order, error)
 }
 
-func (m MockService) PlaceOrder(ctx context.Context, ipt *placeOrderInput) (*Order, error) {
+func (m MockService) PlaceOrder(ctx context.Context, ipt *placeOrderInput) (*model.Order, error) {
 	return m.PlaceOrderFunc(ctx, ipt)
 }

@@ -1,8 +1,8 @@
-package product_test
+package model_test
 
 import (
 	"errors"
-	"kit-clean-app/app/product"
+	"kit-clean-app/app/model"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -13,7 +13,7 @@ func TestProduct_ReduceStock(t *testing.T) {
 
 	type (
 		give struct {
-			product  *product.Product
+			product  *model.Product
 			quantity uint8
 		}
 
@@ -31,7 +31,7 @@ func TestProduct_ReduceStock(t *testing.T) {
 		{
 			"正常終了",
 			give{
-				product: &product.Product{
+				product: &model.Product{
 					Stock: 5,
 				},
 				quantity: 3,
@@ -43,7 +43,7 @@ func TestProduct_ReduceStock(t *testing.T) {
 		{
 			"在庫数が注文数と等しい",
 			give{
-				product: &product.Product{
+				product: &model.Product{
 					Stock: 5,
 				},
 				quantity: 5,
@@ -55,14 +55,14 @@ func TestProduct_ReduceStock(t *testing.T) {
 		{
 			"在庫数が注文数より少ない",
 			give{
-				product: &product.Product{
+				product: &model.Product{
 					Stock: 5,
 				},
 				quantity: 6,
 			},
 			want{
 				stock: 5,
-				err:   product.ErrInsufficientStock,
+				err:   model.ErrInsufficientStock,
 			},
 		},
 	}

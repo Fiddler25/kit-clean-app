@@ -3,6 +3,7 @@ package order
 import (
 	"context"
 	"errors"
+	"kit-clean-app/app/model"
 	"kit-clean-app/app/product"
 	"kit-clean-app/pkg/test"
 	"testing"
@@ -23,7 +24,7 @@ func TestService_PlaceOrder(t *testing.T) {
 		}
 
 		want struct {
-			order *Order
+			order *model.Order
 			err   error
 		}
 	)
@@ -42,8 +43,8 @@ func TestService_PlaceOrder(t *testing.T) {
 					quantity:  2,
 				},
 				productRepo: product.MockRepository{
-					GetFunc: func(ctx context.Context, id product.ID) (*product.Product, error) {
-						return &product.Product{
+					GetFunc: func(ctx context.Context, id model.ProductID) (*model.Product, error) {
+						return &model.Product{
 							ID:          1,
 							Name:        "コーヒー",
 							Description: "豆 深煎り 200g",
@@ -51,8 +52,8 @@ func TestService_PlaceOrder(t *testing.T) {
 							Stock:       5,
 						}, nil
 					},
-					UpdateFunc: func(ctx context.Context, p *product.Product) (*product.Product, error) {
-						return &product.Product{
+					UpdateFunc: func(ctx context.Context, p *model.Product) (*model.Product, error) {
+						return &model.Product{
 							ID:          1,
 							Name:        "コーヒー",
 							Description: "豆 深煎り 200g",
@@ -62,8 +63,8 @@ func TestService_PlaceOrder(t *testing.T) {
 					},
 				},
 				orderRepo: MockRepository{
-					CreateFunc: func(ctx context.Context, e *Order) (*Order, error) {
-						return &Order{
+					CreateFunc: func(ctx context.Context, e *model.Order) (*model.Order, error) {
+						return &model.Order{
 							ID:         1,
 							ProductID:  1,
 							UserID:     1,
@@ -74,7 +75,7 @@ func TestService_PlaceOrder(t *testing.T) {
 				},
 			},
 			want{
-				order: &Order{
+				order: &model.Order{
 					ID:         1,
 					ProductID:  1,
 					UserID:     1,
@@ -92,8 +93,8 @@ func TestService_PlaceOrder(t *testing.T) {
 					quantity:  2,
 				},
 				productRepo: product.MockRepository{
-					GetFunc: func(ctx context.Context, id product.ID) (*product.Product, error) {
-						return &product.Product{
+					GetFunc: func(ctx context.Context, id model.ProductID) (*model.Product, error) {
+						return &model.Product{
 							ID:          1,
 							Name:        "コーヒー",
 							Description: "豆 深煎り 200g",
@@ -101,13 +102,13 @@ func TestService_PlaceOrder(t *testing.T) {
 							Stock:       5,
 						}, nil
 					},
-					UpdateFunc: func(ctx context.Context, p *product.Product) (*product.Product, error) {
-						return &product.Product{}, test.ErrDummy
+					UpdateFunc: func(ctx context.Context, p *model.Product) (*model.Product, error) {
+						return &model.Product{}, test.ErrDummy
 					},
 				},
 			},
 			want{
-				order: &Order{},
+				order: &model.Order{},
 				err:   test.ErrDummy,
 			},
 		},

@@ -2,25 +2,25 @@ package order
 
 import (
 	"context"
-	"kit-clean-app/app/product"
+	"kit-clean-app/app/model"
 
 	"github.com/go-kit/kit/endpoint"
 )
 
 type (
 	placeOrderRequest struct {
-		ProductID product.ID `json:"product_id"`
-		UserID    uint32     `json:"user_id"`
-		Quantity  uint8      `json:"quantity"`
+		ProductID model.ProductID `json:"product_id"`
+		UserID    uint32          `json:"user_id"`
+		Quantity  uint8           `json:"quantity"`
 	}
 
 	placeOrderResponse struct {
-		ID         ID         `json:"id,omitempty"`
-		ProductID  product.ID `json:"product_id,omitempty"`
-		UserID     uint32     `json:"user_id,omitempty"`
-		Quantity   uint8      `json:"quantity,omitempty"`
-		TotalPrice float64    `json:"total_price,omitempty"`
-		Err        error      `json:"err,omitempty" json:"err,omitempty"`
+		ID         model.OrderID   `json:"id,omitempty"`
+		ProductID  model.ProductID `json:"product_id,omitempty"`
+		UserID     uint32          `json:"user_id,omitempty"`
+		Quantity   uint8           `json:"quantity,omitempty"`
+		TotalPrice float64         `json:"total_price,omitempty"`
+		Err        error           `json:"err,omitempty" json:"err,omitempty"`
 	}
 )
 

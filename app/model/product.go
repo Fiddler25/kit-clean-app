@@ -1,15 +1,16 @@
-package product
+package model
 
 import "errors"
 
-type ID uint32
+type ProductID uint32
 
 type Product struct {
-	ID          ID
-	Name        string
-	Description string
-	Price       float64
-	Stock       uint8
+	ID           ProductID
+	Name         string
+	Description  string
+	Price        float64
+	Stock        uint8
+	CurrencyCode string
 }
 
 var ErrInsufficientStock = errors.New("insufficient stock")

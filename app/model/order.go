@@ -1,12 +1,10 @@
-package order
+package model
 
-import "kit-clean-app/app/product"
-
-type ID uint32
+type OrderID uint32
 
 type Order struct {
-	ID         ID
-	ProductID  product.ID
+	ID         OrderID
+	ProductID  ProductID
 	UserID     uint32
 	Quantity   uint8
 	TotalPrice float64
