@@ -7,6 +7,7 @@ import (
 	"kit-clean-app/app/order"
 	"kit-clean-app/app/product"
 	"kit-clean-app/db"
+	"kit-clean-app/pkg/external/exchangerate"
 	"net/http"
 	"os"
 	"os/signal"
@@ -36,6 +37,13 @@ func main() {
 	}
 
 	idb, ctx := db.New()
+
+	exchangeRateAPI, err := exchangerate.New(os.Getenv("EXCHANGE_RATE_API_BASE_URL"), os.Getenv("EXCHANGE_RATE_API_KEY"))
+	if err != nil {
+		level.Error(logger).Log("err", err)
+		return
+	}
+	exchangeRateAPI.Convert("")
 
 	productRepo := product.NewRepository(idb.Client)
 	productSvc := product.NewService(productRepo)
