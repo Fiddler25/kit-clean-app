@@ -31,7 +31,7 @@ type ReadProduct struct {
 	Stock       uint8           `json:"stock,omitempty"`
 }
 
-func toRead(m *model.Product) *ReadProduct {
+func modelToRead(m *model.Product) *ReadProduct {
 	return &ReadProduct{
 		ID:          m.ID,
 		Name:        m.Name,

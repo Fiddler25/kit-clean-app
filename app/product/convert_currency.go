@@ -23,11 +23,5 @@ func (s *service) ConvertCurrency(ctx context.Context, ipt convertCurrencyInput)
 
 	p.ConvertPrice(rate)
 
-	return &ReadProduct{
-		ID:          p.ID,
-		Name:        p.Name,
-		Description: p.Description,
-		Price:       p.Price,
-		Stock:       p.Stock,
-	}, nil
+	return modelToRead(p), nil
 }

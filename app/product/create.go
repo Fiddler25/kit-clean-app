@@ -24,5 +24,5 @@ func (s *service) CreateProduct(ctx context.Context, ipt createProductInput) (*R
 		return &ReadProduct{}, err
 	}
 
-	return toRead(p), nil
+	return modelToRead(p), nil
 }

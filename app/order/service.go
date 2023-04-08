@@ -33,7 +33,7 @@ type ReadOrder struct {
 	TotalPrice float64         `json:"total_price,omitempty"`
 }
 
-func toRead(m *model.Order) *ReadOrder {
+func modelToRead(m *model.Order) *ReadOrder {
 	return &ReadOrder{
 		ID:         m.ID,
 		ProductID:  m.ProductID,

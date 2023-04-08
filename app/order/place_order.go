@@ -47,5 +47,5 @@ func (s service) PlaceOrder(ctx context.Context, ipt *placeOrderInput) (*ReadOrd
 		return &ReadOrder{}, err
 	}
 
-	return toRead(order), nil
+	return modelToRead(order), nil
 }
