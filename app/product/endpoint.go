@@ -18,12 +18,8 @@ type (
 	}
 
 	createProductResponse struct {
-		ID          model.ProductID `json:"id,omitempty"`
-		Name        string          `json:"name,omitempty"`
-		Description string          `json:"description,omitempty"`
-		Price       float64         `json:"price,omitempty"`
-		Stock       uint8           `json:"stock,omitempty"`
-		Err         error           `json:"error,omitempty"`
+		Product *ReadProduct `json:"product,omitempty"`
+		Err     error        `json:"error,omitempty"`
 	}
 )
 
@@ -61,12 +57,8 @@ func makeCreateProductEndpoint(s Service) endpoint.Endpoint {
 		opt, err := s.CreateProduct(ctx, ipt)
 
 		return createProductResponse{
-			ID:          opt.ID,
-			Name:        opt.Name,
-			Description: opt.Description,
-			Price:       opt.Price,
-			Stock:       opt.Stock,
-			Err:         err,
+			Product: opt,
+			Err:     err,
 		}, nil
 	}
 }

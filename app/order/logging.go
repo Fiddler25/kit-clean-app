@@ -2,7 +2,6 @@ package order
 
 import (
 	"context"
-	"kit-clean-app/app/model"
 	"time"
 
 	"github.com/go-kit/kit/log"
@@ -17,7 +16,7 @@ func NewLoggingService(logger log.Logger, s Service) Service {
 	return &loggingService{logger, s}
 }
 
-func (l *loggingService) PlaceOrder(ctx context.Context, ipt *placeOrderInput) (o *model.Order, err error) {
+func (l *loggingService) PlaceOrder(ctx context.Context, ipt *placeOrderInput) (o *ReadOrder, err error) {
 	defer func(begin time.Time) {
 		l.logger.Log(
 			"method", "create",

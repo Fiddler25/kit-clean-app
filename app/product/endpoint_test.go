@@ -3,7 +3,6 @@ package product
 import (
 	"context"
 	"errors"
-	"kit-clean-app/app/model"
 	"kit-clean-app/pkg/apperr"
 	"kit-clean-app/pkg/test"
 	"testing"
@@ -35,8 +34,8 @@ func TestMakeCreateProductEndpoint(t *testing.T) {
 					Stock:       5,
 				},
 				svc: MockService{
-					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*model.Product, error) {
-						return &model.Product{
+					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*ReadProduct, error) {
+						return &ReadProduct{
 							ID:          1,
 							Name:        "コーヒー",
 							Description: "豆 深煎り 200g",
@@ -47,11 +46,13 @@ func TestMakeCreateProductEndpoint(t *testing.T) {
 				},
 			},
 			createProductResponse{
-				ID:          1,
-				Name:        "コーヒー",
-				Description: "豆 深煎り 200g",
-				Price:       1500,
-				Stock:       5,
+				Product: &ReadProduct{
+					ID:          1,
+					Name:        "コーヒー",
+					Description: "豆 深煎り 200g",
+					Price:       1500,
+					Stock:       5,
+				},
 			},
 		},
 		{
@@ -92,13 +93,14 @@ func TestMakeCreateProductEndpoint(t *testing.T) {
 					Stock:       5,
 				},
 				svc: MockService{
-					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*model.Product, error) {
-						return &model.Product{}, test.ErrDummy
+					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*ReadProduct, error) {
+						return &ReadProduct{}, test.ErrDummy
 					},
 				},
 			},
 			createProductResponse{
-				Err: test.ErrDummy,
+				Product: &ReadProduct{},
+				Err:     test.ErrDummy,
 			},
 		},
 	}

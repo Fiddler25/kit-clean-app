@@ -12,7 +12,7 @@ type createProductInput struct {
 	Stock       uint8
 }
 
-func (s *service) CreateProduct(ctx context.Context, ipt createProductInput) (*model.Product, error) {
+func (s *service) CreateProduct(ctx context.Context, ipt createProductInput) (*ReadProduct, error) {
 	m := &model.Product{
 		Name:        ipt.Name,
 		Description: ipt.Description,
@@ -21,8 +21,8 @@ func (s *service) CreateProduct(ctx context.Context, ipt createProductInput) (*m
 	}
 	p, err := s.repo.Create(ctx, m)
 	if err != nil {
-		return &model.Product{}, err
+		return &ReadProduct{}, err
 	}
 
-	return p, nil
+	return toRead(p), nil
 }

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"kit-clean-app/app/model"
 	"kit-clean-app/pkg/apperr"
 	"kit-clean-app/pkg/test"
 	"net/http"
@@ -49,8 +48,8 @@ func TestMakeHandler(t *testing.T) {
 				method: http.MethodPost,
 				path:   "/v1/products",
 				svc: MockService{
-					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*model.Product, error) {
-						return &model.Product{
+					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*ReadProduct, error) {
+						return &ReadProduct{
 							ID:          1,
 							Name:        "コーヒー",
 							Description: "豆 深煎り 200g",
@@ -63,11 +62,13 @@ func TestMakeHandler(t *testing.T) {
 			want{
 				statusCode: http.StatusOK,
 				resp: map[string]interface{}{
-					"id":          float64(1),
-					"name":        "コーヒー",
-					"description": "豆 深煎り 200g",
-					"price":       float64(1500),
-					"stock":       float64(5),
+					"product": map[string]interface{}{
+						"id":          float64(1),
+						"name":        "コーヒー",
+						"description": "豆 深煎り 200g",
+						"price":       float64(1500),
+						"stock":       float64(5),
+					},
 				},
 			},
 		},
@@ -81,8 +82,8 @@ func TestMakeHandler(t *testing.T) {
 				method: http.MethodPost,
 				path:   "/v1/products",
 				svc: MockService{
-					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*model.Product, error) {
-						return &model.Product{}, apperr.ErrInvalidArgument
+					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*ReadProduct, error) {
+						return &ReadProduct{}, apperr.ErrInvalidArgument
 					},
 				},
 			},
@@ -103,8 +104,8 @@ func TestMakeHandler(t *testing.T) {
 				method: http.MethodPost,
 				path:   "/v1/products",
 				svc: MockService{
-					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*model.Product, error) {
-						return &model.Product{}, test.ErrDummy
+					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*ReadProduct, error) {
+						return &ReadProduct{}, test.ErrDummy
 					},
 				},
 			},

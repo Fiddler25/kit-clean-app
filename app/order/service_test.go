@@ -24,7 +24,7 @@ func TestService_PlaceOrder(t *testing.T) {
 		}
 
 		want struct {
-			order *model.Order
+			order *ReadOrder
 			err   error
 		}
 	)
@@ -75,7 +75,7 @@ func TestService_PlaceOrder(t *testing.T) {
 				},
 			},
 			want{
-				order: &model.Order{
+				order: &ReadOrder{
 					ID:         1,
 					ProductID:  1,
 					UserID:     1,
@@ -108,7 +108,7 @@ func TestService_PlaceOrder(t *testing.T) {
 				},
 			},
 			want{
-				order: &model.Order{},
+				order: &ReadOrder{},
 				err:   test.ErrDummy,
 			},
 		},

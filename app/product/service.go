@@ -7,7 +7,7 @@ import (
 )
 
 type Service interface {
-	CreateProduct(ctx context.Context, ipt createProductInput) (*model.Product, error)
+	CreateProduct(ctx context.Context, ipt createProductInput) (*ReadProduct, error)
 	ConvertCurrency(ctx context.Context, ipt convertCurrencyInput) (*ReadProduct, error)
 }
 
@@ -29,4 +29,14 @@ type ReadProduct struct {
 	Description string          `json:"description,omitempty"`
 	Price       float64         `json:"price,omitempty"`
 	Stock       uint8           `json:"stock,omitempty"`
+}
+
+func toRead(m *model.Product) *ReadProduct {
+	return &ReadProduct{
+		ID:          m.ID,
+		Name:        m.Name,
+		Description: m.Description,
+		Price:       m.Price,
+		Stock:       m.Stock,
+	}
 }

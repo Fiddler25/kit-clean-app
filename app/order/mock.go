@@ -8,10 +8,10 @@ import (
 var _ Service = MockService{}
 
 type MockService struct {
-	PlaceOrderFunc func(ctx context.Context, ipt *placeOrderInput) (*model.Order, error)
+	PlaceOrderFunc func(ctx context.Context, ipt *placeOrderInput) (*ReadOrder, error)
 }
 
-func (m MockService) PlaceOrder(ctx context.Context, ipt *placeOrderInput) (*model.Order, error) {
+func (m MockService) PlaceOrder(ctx context.Context, ipt *placeOrderInput) (*ReadOrder, error) {
 	return m.PlaceOrderFunc(ctx, ipt)
 }
 

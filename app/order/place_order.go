@@ -11,14 +11,14 @@ type placeOrderInput struct {
 	quantity  uint8
 }
 
-func (s service) PlaceOrder(ctx context.Context, ipt *placeOrderInput) (*model.Order, error) {
+func (s service) PlaceOrder(ctx context.Context, ipt *placeOrderInput) (*ReadOrder, error) {
 	curr, err := s.productRepo.Get(ctx, ipt.productID)
 	if err != nil {
 		return nil, err
 	}
 
 	if err := curr.ReduceStock(ipt.quantity); err != nil {
-		return &model.Order{}, err
+		return &ReadOrder{}, err
 	}
 
 	var order = &model.Order{
@@ -44,14 +44,8 @@ func (s service) PlaceOrder(ctx context.Context, ipt *placeOrderInput) (*model.O
 		return nil
 
 	}); err != nil {
-		return &model.Order{}, err
+		return &ReadOrder{}, err
 	}
 
-	return &model.Order{
-		ID:         order.ID,
-		ProductID:  order.ProductID,
-		UserID:     order.UserID,
-		Quantity:   order.Quantity,
-		TotalPrice: order.TotalPrice,
-	}, nil
+	return toRead(order), nil
 }

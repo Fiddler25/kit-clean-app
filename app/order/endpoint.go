@@ -15,12 +15,8 @@ type (
 	}
 
 	placeOrderResponse struct {
-		ID         model.OrderID   `json:"id,omitempty"`
-		ProductID  model.ProductID `json:"product_id,omitempty"`
-		UserID     uint32          `json:"user_id,omitempty"`
-		Quantity   uint8           `json:"quantity,omitempty"`
-		TotalPrice float64         `json:"total_price,omitempty"`
-		Err        error           `json:"err,omitempty" json:"err,omitempty"`
+		Order *ReadOrder `json:"order,omitempty"`
+		Err   error      `json:"err,omitempty"`
 	}
 )
 
@@ -38,12 +34,8 @@ func makePlaceOrderEndpoint(s Service) endpoint.Endpoint {
 		opt, err := s.PlaceOrder(ctx, ipt)
 
 		return placeOrderResponse{
-			ID:         opt.ID,
-			ProductID:  opt.ProductID,
-			UserID:     opt.UserID,
-			Quantity:   opt.Quantity,
-			TotalPrice: opt.TotalPrice,
-			Err:        err,
+			Order: opt,
+			Err:   err,
 		}, nil
 	}
 }
