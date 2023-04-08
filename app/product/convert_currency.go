@@ -12,7 +12,7 @@ type convertCurrencyInput struct {
 }
 
 func (s *service) ConvertCurrency(ctx context.Context, ipt convertCurrencyInput) (*ReadProduct, error) {
-	product, err := s.repo.Get(ctx, ipt.id)
+	p, err := s.repo.Get(ctx, ipt.id)
 	if err != nil {
 		return nil, err
 	}
@@ -22,8 +22,7 @@ func (s *service) ConvertCurrency(ctx context.Context, ipt convertCurrencyInput)
 		return nil, err
 	}
 
-	fmt.Printf("product: %+v\n", product)
-	fmt.Printf("rate: %+v\n", rate)
+	p.ConvertPrice(rate)
 
 	return &ReadProduct{
 		ID:           100,

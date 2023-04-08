@@ -23,3 +23,7 @@ func (p *Product) ReduceStock(quantity uint8) error {
 
 	return nil
 }
+
+func (p *Product) ConvertPrice(rate float64) {
+	p.Price = p.Price * rate
+}
