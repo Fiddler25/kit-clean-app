@@ -1,6 +1,7 @@
 package exchangerate_test
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"kit-clean-app/pkg/external/exchangerate"
@@ -64,7 +65,7 @@ func TestAPI_Convert(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			got, err := api.Convert("USD")
+			got, err := api.Convert(context.Background(), "USD")
 
 			if !errors.Is(err, tt.err) {
 				t.Errorf("want = %v, error = %v", tt.err, err)

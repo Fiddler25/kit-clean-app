@@ -1,6 +1,7 @@
 package exchangerate
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -12,18 +13,22 @@ const defaultCurrencyCode = "JPY"
 
 var ErrConvert = errors.New("convert error")
 
-type API struct {
+type API interface {
+	Convert(ctx context.Context, currencyCode string) (float64, error)
+}
+
+type api struct {
 	apiKey  string
 	baseURL *url.URL
 }
 
-func New(baseURL, apiKey string) (*API, error) {
+func New(baseURL, apiKey string) (API, error) {
 	u, err := url.Parse(baseURL)
 	if err != nil {
 		return nil, err
 	}
 
-	return &API{
+	return &api{
 		apiKey:  apiKey,
 		baseURL: u,
 	}, nil
@@ -54,7 +59,7 @@ type exchangeRateException struct {
 	Message string `json:"message"`
 }
 
-func (a API) Convert(currencyCode string) (float64, error) {
+func (a api) Convert(ctx context.Context, currencyCode string) (float64, error) {
 	u := a.baseURL.JoinPath("exchangerates_data", "convert")
 
 	v := url.Values{}
@@ -64,7 +69,7 @@ func (a API) Convert(currencyCode string) (float64, error) {
 
 	u.RawQuery = v.Encode()
 
-	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
 	if err != nil {
 		return 0, err
 	}

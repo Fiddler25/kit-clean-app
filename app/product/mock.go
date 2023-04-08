@@ -8,11 +8,11 @@ import (
 var _ Service = MockService{}
 
 type MockService struct {
-	CreateProductFunc   func(ctx context.Context, ipt createProductInput) (*ReadProduct, error)
 	ConvertCurrencyFunc func(ctx context.Context, ipt convertCurrencyInput) (*ReadProduct, error)
+	CreateProductFunc   func(ctx context.Context, ipt *createProductInput) (*ReadProduct, error)
 }
 
-func (m MockService) CreateProduct(ctx context.Context, ipt createProductInput) (*ReadProduct, error) {
+func (m MockService) CreateProduct(ctx context.Context, ipt *createProductInput) (*ReadProduct, error) {
 	return m.CreateProductFunc(ctx, ipt)
 }
 

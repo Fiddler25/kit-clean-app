@@ -7,16 +7,16 @@ import (
 )
 
 type Service interface {
-	CreateProduct(ctx context.Context, ipt createProductInput) (*ReadProduct, error)
 	ConvertCurrency(ctx context.Context, ipt convertCurrencyInput) (*ReadProduct, error)
+	CreateProduct(ctx context.Context, ipt *createProductInput) (*ReadProduct, error)
 }
 
 type service struct {
 	productStore    Store
-	exchangeRateAPI *exchangerate.API
+	exchangeRateAPI exchangerate.API
 }
 
-func NewService(productStore Store, erAPI *exchangerate.API) Service {
+func NewService(productStore Store, erAPI exchangerate.API) Service {
 	return &service{
 		productStore:    productStore,
 		exchangeRateAPI: erAPI,

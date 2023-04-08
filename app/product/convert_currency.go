@@ -10,13 +10,13 @@ type convertCurrencyInput struct {
 	currencyCode string
 }
 
-func (s *service) ConvertCurrency(ctx context.Context, ipt convertCurrencyInput) (*ReadProduct, error) {
+func (s *service) ConvertCurrency(ctx context.Context, ipt *convertCurrencyInput) (*ReadProduct, error) {
 	p, err := s.productStore.Get(ctx, ipt.id)
 	if err != nil {
 		return &ReadProduct{}, err
 	}
 
-	rate, err := s.exchangeRateAPI.Convert(ipt.currencyCode)
+	rate, err := s.exchangeRateAPI.Convert(ctx, ipt.currencyCode)
 	if err != nil {
 		return &ReadProduct{}, err
 	}
