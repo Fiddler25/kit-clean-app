@@ -5,12 +5,11 @@ import "errors"
 type ProductID uint32
 
 type Product struct {
-	ID           ProductID
-	Name         string
-	Description  string
-	Price        float64
-	Stock        uint8
-	CurrencyCode string
+	ID          ProductID
+	Name        string
+	Description string
+	Price       float64
+	Stock       uint8
 }
 
 var ErrInsufficientStock = errors.New("insufficient stock")

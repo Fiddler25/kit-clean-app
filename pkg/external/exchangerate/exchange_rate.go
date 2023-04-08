@@ -55,8 +55,8 @@ func (a API) Convert(currencyCode string) (float64, error) {
 	u := a.baseURL.JoinPath("exchangerates_data", "convert")
 
 	v := url.Values{}
-	v.Add("to", defaultCurrencyCode)
-	v.Add("from", currencyCode)
+	v.Add("to", currencyCode)
+	v.Add("from", defaultCurrencyCode)
 	v.Add("amount", "1")
 
 	u.RawQuery = v.Encode()

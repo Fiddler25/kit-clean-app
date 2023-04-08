@@ -2,7 +2,6 @@ package product
 
 import (
 	"context"
-	"fmt"
 	"kit-clean-app/app/model"
 )
 
@@ -14,22 +13,21 @@ type convertCurrencyInput struct {
 func (s *service) ConvertCurrency(ctx context.Context, ipt convertCurrencyInput) (*ReadProduct, error) {
 	p, err := s.repo.Get(ctx, ipt.id)
 	if err != nil {
-		return nil, err
+		return &ReadProduct{}, err
 	}
 
 	rate, err := s.exchangeRateAPI.Convert(ipt.currencyCode)
 	if err != nil {
-		return nil, err
+		return &ReadProduct{}, err
 	}
 
 	p.ConvertPrice(rate)
 
 	return &ReadProduct{
-		ID:           100,
-		Name:         "",
-		Description:  "",
-		Price:        0,
-		Stock:        0,
-		CurrencyCode: "JP",
+		ID:          p.ID,
+		Name:        p.Name,
+		Description: p.Description,
+		Price:       p.Price,
+		Stock:       p.Stock,
 	}, nil
 }
