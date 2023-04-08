@@ -81,3 +81,34 @@ func TestProduct_ReduceStock(t *testing.T) {
 		})
 	}
 }
+
+func TestProduct_ConvertPrice(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name  string
+		price float64
+		rate  float64
+		want  float64
+	}{
+		{"1.5", 100.0, 1.5, 150.0},
+		{"0.5", 200.0, 0.5, 100.0},
+		{"0", 300.0, 0, 0},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			product := &model.Product{
+				ID:    1,
+				Name:  "test",
+				Price: tt.price,
+				Stock: 5,
+			}
+			product.ConvertPrice(tt.rate)
+
+			if diff := cmp.Diff(tt.want, product.Price); diff != "" {
+				t.Errorf("price mismatch (-want +got)\n%s", diff)
+			}
+		})
+	}
+}

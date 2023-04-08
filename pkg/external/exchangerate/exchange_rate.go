@@ -2,12 +2,15 @@ package exchangerate
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
 )
 
 const defaultCurrencyCode = "JPY"
+
+var ErrConvert = errors.New("convert error")
 
 type API struct {
 	apiKey  string
@@ -78,7 +81,7 @@ func (a API) Convert(currencyCode string) (float64, error) {
 		if err := json.NewDecoder(resp.Body).Decode(&e); err != nil {
 			return 0, err
 		}
-		return 0, fmt.Errorf("convert error: status code=%d, message=%s", resp.StatusCode, e.Message)
+		return 0, fmt.Errorf("%w: status code=%d, message=%s", ErrConvert, resp.StatusCode, e.Message)
 	}
 
 	var r convertResponse

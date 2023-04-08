@@ -15,27 +15,20 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-type testCreateProductResponse struct {
-	ID          model.ProductID `json:"id"`
-	Name        string          `json:"name"`
-	Description string          `json:"description"`
-	Price       float64         `json:"price"`
-	Stock       uint8           `json:"stock"`
-	Err         string          `json:"error"`
-}
-
 func TestMakeHandler(t *testing.T) {
 	t.Parallel()
 
 	type (
 		give struct {
-			body map[string]interface{}
-			svc  MockService
+			body   map[string]interface{}
+			method string
+			path   string
+			svc    MockService
 		}
 
 		want struct {
 			statusCode int
-			resp       testCreateProductResponse
+			resp       map[string]interface{}
 		}
 	)
 
@@ -45,7 +38,7 @@ func TestMakeHandler(t *testing.T) {
 		want want
 	}{
 		{
-			"正常終了",
+			"【products】正常終了",
 			give{
 				body: map[string]interface{}{
 					"name":        "コーヒー",
@@ -53,6 +46,8 @@ func TestMakeHandler(t *testing.T) {
 					"price":       1500,
 					"stock":       5,
 				},
+				method: http.MethodPost,
+				path:   "/v1/products",
 				svc: MockService{
 					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*model.Product, error) {
 						return &model.Product{
@@ -67,22 +62,24 @@ func TestMakeHandler(t *testing.T) {
 			},
 			want{
 				statusCode: http.StatusOK,
-				resp: testCreateProductResponse{
-					ID:          1,
-					Name:        "コーヒー",
-					Description: "豆 深煎り 200g",
-					Price:       1500,
-					Stock:       5,
+				resp: map[string]interface{}{
+					"id":          float64(1),
+					"name":        "コーヒー",
+					"description": "豆 深煎り 200g",
+					"price":       float64(1500),
+					"stock":       float64(5),
 				},
 			},
 		},
 		{
-			"不正なリクエスト",
+			"【products】不正なリクエスト",
 			give{
 				body: map[string]interface{}{
 					"name":  "コーヒー",
 					"price": 1500,
 				},
+				method: http.MethodPost,
+				path:   "/v1/products",
 				svc: MockService{
 					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*model.Product, error) {
 						return &model.Product{}, apperr.ErrInvalidArgument
@@ -91,18 +88,20 @@ func TestMakeHandler(t *testing.T) {
 			},
 			want{
 				statusCode: http.StatusBadRequest,
-				resp: testCreateProductResponse{
-					Err: "invalid argument",
+				resp: map[string]interface{}{
+					"error": "invalid argument",
 				},
 			},
 		},
 		{
-			"その他のエラー",
+			"【products】その他のエラー",
 			give{
 				body: map[string]interface{}{
 					"name":  "コーヒー",
 					"price": 1500,
 				},
+				method: http.MethodPost,
+				path:   "/v1/products",
 				svc: MockService{
 					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*model.Product, error) {
 						return &model.Product{}, test.ErrDummy
@@ -111,8 +110,77 @@ func TestMakeHandler(t *testing.T) {
 			},
 			want{
 				statusCode: http.StatusInternalServerError,
-				resp: testCreateProductResponse{
-					Err: "dummy-error",
+				resp: map[string]interface{}{
+					"error": "dummy-error",
+				},
+			},
+		},
+		{
+			"【convert-currency】正常終了",
+			give{
+				body:   map[string]interface{}{},
+				method: http.MethodGet,
+				path:   "/v1/products/1/convert-currency?currency_code=USD",
+				svc: MockService{
+					ConvertCurrencyFunc: func(ctx context.Context, ipt convertCurrencyInput) (*ReadProduct, error) {
+						return &ReadProduct{
+							ID:          1,
+							Name:        "コーヒー",
+							Description: "豆 深煎り 200g",
+							Price:       1500,
+							Stock:       5,
+						}, nil
+					},
+				},
+			},
+			want{
+				statusCode: http.StatusOK,
+				resp: map[string]interface{}{
+					"product": map[string]interface{}{
+						"id":          float64(1),
+						"name":        "コーヒー",
+						"description": "豆 深煎り 200g",
+						"price":       float64(1500),
+						"stock":       float64(5),
+					},
+				},
+			},
+		},
+		{
+			"【convert-currency】currency_codeが存在しない",
+			give{
+				body:   map[string]interface{}{},
+				method: http.MethodGet,
+				path:   "/v1/products/1/convert-currency",
+				svc: MockService{
+					ConvertCurrencyFunc: func(ctx context.Context, ipt convertCurrencyInput) (*ReadProduct, error) {
+						return &ReadProduct{}, nil
+					},
+				},
+			},
+			want{
+				statusCode: http.StatusInternalServerError,
+				resp: map[string]interface{}{
+					"error": "currency_code query parameter is required",
+				},
+			},
+		},
+		{
+			"【convert-currency】その他のエラー",
+			give{
+				body:   map[string]interface{}{},
+				method: http.MethodGet,
+				path:   "/v1/products/1/convert-currency?currency_code=USD",
+				svc: MockService{
+					ConvertCurrencyFunc: func(ctx context.Context, ipt convertCurrencyInput) (*ReadProduct, error) {
+						return &ReadProduct{}, test.ErrDummy
+					},
+				},
+			},
+			want{
+				statusCode: http.StatusInternalServerError,
+				resp: map[string]interface{}{
+					"error": "dummy-error",
 				},
 			},
 		},
@@ -125,7 +193,7 @@ func TestMakeHandler(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			req, err := http.NewRequest(http.MethodPost, "/v1/products", bytes.NewReader(b))
+			req, err := http.NewRequest(tt.give.method, tt.give.path, bytes.NewReader(b))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -137,7 +205,7 @@ func TestMakeHandler(t *testing.T) {
 			resp := w.Result()
 			defer resp.Body.Close()
 
-			var got testCreateProductResponse
+			var got map[string]interface{}
 			if err := json.NewDecoder(resp.Body).Decode(&got); err != nil {
 				t.Fatal(err)
 			}
