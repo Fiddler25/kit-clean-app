@@ -3,8 +3,9 @@ package order
 import (
 	"context"
 	"errors"
+	"kit-clean-app/app/model"
+	"kit-clean-app/app/product"
 	"kit-clean-app/pkg/test"
-	"kit-clean-app/product"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -17,13 +18,13 @@ func TestService_PlaceOrder(t *testing.T) {
 
 	type (
 		give struct {
-			ipt         *placeOrderInput
-			productRepo product.MockRepository
-			orderRepo   MockRepository
+			ipt          *placeOrderInput
+			productStore product.MockStore
+			orderStore   MockStore
 		}
 
 		want struct {
-			order *Order
+			order *ReadOrder
 			err   error
 		}
 	)
@@ -41,9 +42,9 @@ func TestService_PlaceOrder(t *testing.T) {
 					userID:    1,
 					quantity:  2,
 				},
-				productRepo: product.MockRepository{
-					GetFunc: func(ctx context.Context, id product.ID) (*product.Product, error) {
-						return &product.Product{
+				productStore: product.MockStore{
+					GetFunc: func(ctx context.Context, id model.ProductID) (*model.Product, error) {
+						return &model.Product{
 							ID:          1,
 							Name:        "コーヒー",
 							Description: "豆 深煎り 200g",
@@ -51,8 +52,8 @@ func TestService_PlaceOrder(t *testing.T) {
 							Stock:       5,
 						}, nil
 					},
-					UpdateFunc: func(ctx context.Context, p *product.Product) (*product.Product, error) {
-						return &product.Product{
+					UpdateFunc: func(ctx context.Context, p *model.Product) (*model.Product, error) {
+						return &model.Product{
 							ID:          1,
 							Name:        "コーヒー",
 							Description: "豆 深煎り 200g",
@@ -61,9 +62,9 @@ func TestService_PlaceOrder(t *testing.T) {
 						}, nil
 					},
 				},
-				orderRepo: MockRepository{
-					CreateFunc: func(ctx context.Context, e *Order) (*Order, error) {
-						return &Order{
+				orderStore: MockStore{
+					CreateFunc: func(ctx context.Context, e *model.Order) (*model.Order, error) {
+						return &model.Order{
 							ID:         1,
 							ProductID:  1,
 							UserID:     1,
@@ -74,7 +75,7 @@ func TestService_PlaceOrder(t *testing.T) {
 				},
 			},
 			want{
-				order: &Order{
+				order: &ReadOrder{
 					ID:         1,
 					ProductID:  1,
 					UserID:     1,
@@ -84,16 +85,16 @@ func TestService_PlaceOrder(t *testing.T) {
 			},
 		},
 		{
-			"productRepo.Update()でエラー発生",
+			"productStore.Update()でエラー発生",
 			give{
 				ipt: &placeOrderInput{
 					productID: 1,
 					userID:    1,
 					quantity:  2,
 				},
-				productRepo: product.MockRepository{
-					GetFunc: func(ctx context.Context, id product.ID) (*product.Product, error) {
-						return &product.Product{
+				productStore: product.MockStore{
+					GetFunc: func(ctx context.Context, id model.ProductID) (*model.Product, error) {
+						return &model.Product{
 							ID:          1,
 							Name:        "コーヒー",
 							Description: "豆 深煎り 200g",
@@ -101,13 +102,13 @@ func TestService_PlaceOrder(t *testing.T) {
 							Stock:       5,
 						}, nil
 					},
-					UpdateFunc: func(ctx context.Context, p *product.Product) (*product.Product, error) {
-						return &product.Product{}, test.ErrDummy
+					UpdateFunc: func(ctx context.Context, p *model.Product) (*model.Product, error) {
+						return &model.Product{}, test.ErrDummy
 					},
 				},
 			},
 			want{
-				order: &Order{},
+				order: &ReadOrder{},
 				err:   test.ErrDummy,
 			},
 		},
@@ -116,7 +117,7 @@ func TestService_PlaceOrder(t *testing.T) {
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			s := NewService(tx, tt.give.orderRepo, tt.give.productRepo)
+			s := NewService(tx, tt.give.orderStore, tt.give.productStore)
 
 			got, err := s.PlaceOrder(context.Background(), tt.give.ipt)
 

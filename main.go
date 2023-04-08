@@ -4,16 +4,19 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"kit-clean-app/app/order"
+	"kit-clean-app/app/product"
 	"kit-clean-app/db"
-	"kit-clean-app/order"
-	"kit-clean-app/product"
+	"kit-clean-app/pkg/external/exchangerate"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/log/level"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
@@ -28,21 +31,32 @@ func main() {
 	logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stderr))
 	logger = log.With(logger, "ts", log.DefaultTimestampUTC)
 
+	if err := godotenv.Load(".env"); err != nil {
+		level.Error(logger).Log("err", err)
+		return
+	}
+
 	idb, ctx := db.New()
 
-	productRepo := product.NewRepository(idb.Client)
-	productSvc := product.NewService(productRepo)
+	exchangeRateAPI, err := exchangerate.New(os.Getenv("EXCHANGE_RATE_API_BASE_URL"), os.Getenv("EXCHANGE_RATE_API_KEY"))
+	if err != nil {
+		level.Error(logger).Log("err", err)
+		return
+	}
+
+	productStore := product.NewStore(idb.Client)
+	productSvc := product.NewService(productStore, exchangeRateAPI)
 	productSvc = product.NewLoggingService(log.With(logger, "component", "product"), productSvc)
 
-	orderRepo := order.NewRepository(idb.Client)
-	orderSvc := order.NewService(idb, orderRepo, productRepo)
+	orderStore := order.NewStore(idb.Client)
+	orderSvc := order.NewService(idb, orderStore, productStore)
 	orderSvc = order.NewLoggingService(log.With(logger, "component", "order"), orderSvc)
 
 	httpLogger := log.With(logger, "component", "http")
 
 	mux := http.NewServeMux()
-	mux.Handle("/v1/products", product.MakeHandler(productSvc, httpLogger))
-	mux.Handle("/v1/orders", order.MakeHandler(orderSvc, httpLogger))
+	mux.Handle("/v1/products/", product.MakeHandler(productSvc, httpLogger))
+	mux.Handle("/v1/orders/", order.MakeHandler(orderSvc, httpLogger))
 
 	http.Handle("/", accessControl(mux, ctx))
 	http.Handle("/metrics", promhttp.Handler())
@@ -53,7 +67,7 @@ func main() {
 		errs <- http.ListenAndServe(*httpAddr, nil)
 	}()
 	go func() {
-		c := make(chan os.Signal)
+		c := make(chan os.Signal, 1)
 		signal.Notify(c, syscall.SIGINT)
 		errs <- fmt.Errorf("%s", <-c)
 	}()

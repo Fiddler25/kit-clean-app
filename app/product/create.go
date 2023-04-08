@@ -2,6 +2,7 @@ package product
 
 import (
 	"context"
+	"kit-clean-app/app/model"
 )
 
 type createProductInput struct {
@@ -11,17 +12,17 @@ type createProductInput struct {
 	Stock       uint8
 }
 
-func (s *service) CreateProduct(ctx context.Context, ipt createProductInput) (*Product, error) {
-	e := &Product{
+func (s *service) CreateProduct(ctx context.Context, ipt *createProductInput) (*ReadProduct, error) {
+	m := &model.Product{
 		Name:        ipt.Name,
 		Description: ipt.Description,
 		Price:       ipt.Price,
 		Stock:       ipt.Stock,
 	}
-	p, err := s.repo.Create(ctx, e)
+	p, err := s.productStore.Create(ctx, m)
 	if err != nil {
-		return &Product{}, err
+		return &ReadProduct{}, err
 	}
 
-	return p, nil
+	return modelToRead(p), nil
 }

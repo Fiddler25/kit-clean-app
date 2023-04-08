@@ -1,11 +1,11 @@
-package product
+package model
 
 import "errors"
 
-type ID uint32
+type ProductID uint32
 
 type Product struct {
-	ID          ID
+	ID          ProductID
 	Name        string
 	Description string
 	Price       float64
@@ -21,4 +21,8 @@ func (p *Product) ReduceStock(quantity uint8) error {
 	p.Stock -= quantity
 
 	return nil
+}
+
+func (p *Product) ConvertPrice(rate float64) {
+	p.Price = p.Price * rate
 }

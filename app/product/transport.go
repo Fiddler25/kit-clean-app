@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"kit-clean-app/app/model"
 	"kit-clean-app/pkg/apperr"
 	"net/http"
+	"strconv"
 
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/transport"
@@ -27,6 +29,12 @@ func MakeHandler(s Service, logger kitlog.Logger) http.Handler {
 		encodeResponse,
 		opts...,
 	))
+	r.Methods(http.MethodGet).Path("/v1/products/{id}/convert-currency").Handler(kithttp.NewServer(
+		makeConvertCurrencyEndpoint(s),
+		decodeConvertCurrencyRequest,
+		encodeResponse,
+		opts...,
+	))
 
 	return r
 }
@@ -38,6 +46,27 @@ func decodeCreateProductRequest(_ context.Context, r *http.Request) (interface{}
 	}
 
 	return body, nil
+}
+
+func decodeConvertCurrencyRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	id, ok := mux.Vars(r)["id"]
+	if !ok {
+		return nil, apperr.ErrBadRoute
+	}
+	productID, err := strconv.ParseUint(id, 10, 32)
+	if err != nil {
+		return nil, err
+	}
+
+	currencyCode := r.URL.Query().Get("currency_code")
+	if currencyCode == "" {
+		return nil, errors.New("currency_code query parameter is required")
+	}
+
+	return convertCurrencyRequest{
+		ID:           model.ProductID(uint32(productID)),
+		CurrencyCode: currencyCode,
+	}, nil
 }
 
 type errorer interface {
