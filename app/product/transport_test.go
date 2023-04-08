@@ -48,7 +48,7 @@ func TestMakeHandler(t *testing.T) {
 				method: http.MethodPost,
 				path:   "/v1/products",
 				svc: MockService{
-					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*ReadProduct, error) {
+					CreateProductFunc: func(ctx context.Context, ipt *createProductInput) (*ReadProduct, error) {
 						return &ReadProduct{
 							ID:          1,
 							Name:        "コーヒー",
@@ -82,7 +82,7 @@ func TestMakeHandler(t *testing.T) {
 				method: http.MethodPost,
 				path:   "/v1/products",
 				svc: MockService{
-					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*ReadProduct, error) {
+					CreateProductFunc: func(ctx context.Context, ipt *createProductInput) (*ReadProduct, error) {
 						return &ReadProduct{}, apperr.ErrInvalidArgument
 					},
 				},
@@ -104,7 +104,7 @@ func TestMakeHandler(t *testing.T) {
 				method: http.MethodPost,
 				path:   "/v1/products",
 				svc: MockService{
-					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*ReadProduct, error) {
+					CreateProductFunc: func(ctx context.Context, ipt *createProductInput) (*ReadProduct, error) {
 						return &ReadProduct{}, test.ErrDummy
 					},
 				},
@@ -123,7 +123,7 @@ func TestMakeHandler(t *testing.T) {
 				method: http.MethodGet,
 				path:   "/v1/products/1/convert-currency?currency_code=USD",
 				svc: MockService{
-					ConvertCurrencyFunc: func(ctx context.Context, ipt convertCurrencyInput) (*ReadProduct, error) {
+					ConvertCurrencyFunc: func(ctx context.Context, ipt *convertCurrencyInput) (*ReadProduct, error) {
 						return &ReadProduct{
 							ID:          1,
 							Name:        "コーヒー",
@@ -154,7 +154,7 @@ func TestMakeHandler(t *testing.T) {
 				method: http.MethodGet,
 				path:   "/v1/products/1/convert-currency",
 				svc: MockService{
-					ConvertCurrencyFunc: func(ctx context.Context, ipt convertCurrencyInput) (*ReadProduct, error) {
+					ConvertCurrencyFunc: func(ctx context.Context, ipt *convertCurrencyInput) (*ReadProduct, error) {
 						return &ReadProduct{}, nil
 					},
 				},
@@ -173,7 +173,7 @@ func TestMakeHandler(t *testing.T) {
 				method: http.MethodGet,
 				path:   "/v1/products/1/convert-currency?currency_code=USD",
 				svc: MockService{
-					ConvertCurrencyFunc: func(ctx context.Context, ipt convertCurrencyInput) (*ReadProduct, error) {
+					ConvertCurrencyFunc: func(ctx context.Context, ipt *convertCurrencyInput) (*ReadProduct, error) {
 						return &ReadProduct{}, test.ErrDummy
 					},
 				},

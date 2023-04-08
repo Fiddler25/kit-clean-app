@@ -48,7 +48,7 @@ func makeCreateProductEndpoint(s Service) endpoint.Endpoint {
 			return createProductResponse{Err: fmt.Errorf("%w. %s", apperr.ErrInvalidArgument, "price is greater than or equal to 0")}, nil
 		}
 
-		ipt := createProductInput{
+		ipt := &createProductInput{
 			Name:        req.Name,
 			Description: req.Description,
 			Price:       req.Price,
@@ -76,7 +76,7 @@ func makeConvertCurrencyEndpoint(s Service) endpoint.Endpoint {
 			return convertCurrencyResponse{Err: fmt.Errorf("%w. %s", apperr.ErrInvalidArgument, "currency code is required")}, nil
 		}
 
-		ipt := convertCurrencyInput{
+		ipt := &convertCurrencyInput{
 			id:           req.ID,
 			currencyCode: req.CurrencyCode,
 		}

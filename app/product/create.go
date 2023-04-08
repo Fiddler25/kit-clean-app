@@ -12,7 +12,7 @@ type createProductInput struct {
 	Stock       uint8
 }
 
-func (s *service) CreateProduct(ctx context.Context, ipt createProductInput) (*ReadProduct, error) {
+func (s *service) CreateProduct(ctx context.Context, ipt *createProductInput) (*ReadProduct, error) {
 	m := &model.Product{
 		Name:        ipt.Name,
 		Description: ipt.Description,

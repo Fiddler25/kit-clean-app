@@ -7,8 +7,8 @@ import (
 )
 
 type Service interface {
-	ConvertCurrency(ctx context.Context, ipt convertCurrencyInput) (*ReadProduct, error)
 	CreateProduct(ctx context.Context, ipt *createProductInput) (*ReadProduct, error)
+	ConvertCurrency(ctx context.Context, ipt *convertCurrencyInput) (*ReadProduct, error)
 }
 
 type service struct {

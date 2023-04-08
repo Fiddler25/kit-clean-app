@@ -34,7 +34,7 @@ func TestMakeCreateProductEndpoint(t *testing.T) {
 					Stock:       5,
 				},
 				svc: MockService{
-					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*ReadProduct, error) {
+					CreateProductFunc: func(ctx context.Context, ipt *createProductInput) (*ReadProduct, error) {
 						return &ReadProduct{
 							ID:          1,
 							Name:        "コーヒー",
@@ -93,7 +93,7 @@ func TestMakeCreateProductEndpoint(t *testing.T) {
 					Stock:       5,
 				},
 				svc: MockService{
-					CreateProductFunc: func(ctx context.Context, ipt createProductInput) (*ReadProduct, error) {
+					CreateProductFunc: func(ctx context.Context, ipt *createProductInput) (*ReadProduct, error) {
 						return &ReadProduct{}, test.ErrDummy
 					},
 				},

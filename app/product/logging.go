@@ -16,7 +16,7 @@ func NewLoggingService(logger log.Logger, s Service) Service {
 	return &loggingService{logger, s}
 }
 
-func (l *loggingService) CreateProduct(ctx context.Context, ipt createProductInput) (p *ReadProduct, err error) {
+func (l *loggingService) CreateProduct(ctx context.Context, ipt *createProductInput) (p *ReadProduct, err error) {
 	defer func(begin time.Time) {
 		l.logger.Log(
 			"method", "create",
