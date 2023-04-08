@@ -31,10 +31,10 @@ func (s *store) Create(ctx context.Context, o *model.Order) (*model.Order, error
 		return nil, err
 	}
 
-	return entToOrder(e), nil
+	return entToModel(e), nil
 }
 
-func entToOrder(e *ent.Order) *model.Order {
+func entToModel(e *ent.Order) *model.Order {
 	return &model.Order{
 		ID:         model.OrderID(e.ID),
 		ProductID:  model.ProductID(e.ProductID),

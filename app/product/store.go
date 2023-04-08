@@ -36,7 +36,7 @@ func (s *store) Create(ctx context.Context, p *model.Product) (*model.Product, e
 		return nil, err
 	}
 
-	return entToProduct(e), nil
+	return entToModel(e), nil
 }
 
 func (s *store) Get(ctx context.Context, id model.ProductID) (*model.Product, error) {
@@ -48,7 +48,7 @@ func (s *store) Get(ctx context.Context, id model.ProductID) (*model.Product, er
 		return nil, err
 	}
 
-	return entToProduct(e), nil
+	return entToModel(e), nil
 }
 
 func (s *store) Update(ctx context.Context, p *model.Product) (*model.Product, error) {
@@ -63,10 +63,10 @@ func (s *store) Update(ctx context.Context, p *model.Product) (*model.Product, e
 		return nil, err
 	}
 
-	return entToProduct(e), nil
+	return entToModel(e), nil
 }
 
-func entToProduct(e *ent.Product) *model.Product {
+func entToModel(e *ent.Product) *model.Product {
 	return &model.Product{
 		ID:          model.ProductID(e.ID),
 		Name:        e.Name,

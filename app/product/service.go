@@ -16,10 +16,10 @@ type service struct {
 	exchangeRateAPI exchangerate.API
 }
 
-func NewService(productStore Store, erAPI exchangerate.API) Service {
+func NewService(productStore Store, exchangeRateAPI exchangerate.API) Service {
 	return &service{
 		productStore:    productStore,
-		exchangeRateAPI: erAPI,
+		exchangeRateAPI: exchangeRateAPI,
 	}
 }
 
