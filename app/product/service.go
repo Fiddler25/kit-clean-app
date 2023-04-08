@@ -3,6 +3,7 @@ package product
 import (
 	"context"
 	"kit-clean-app/app/model"
+	"kit-clean-app/pkg/external/exchangerate"
 )
 
 type Service interface {
@@ -11,11 +12,15 @@ type Service interface {
 }
 
 type service struct {
-	repo Repository
+	repo            Repository
+	exchangeRateAPI *exchangerate.API
 }
 
-func NewService(repo Repository) Service {
-	return &service{repo: repo}
+func NewService(repo Repository, erAPI *exchangerate.API) Service {
+	return &service{
+		repo:            repo,
+		exchangeRateAPI: erAPI,
+	}
 }
 
 type ReadProduct struct {

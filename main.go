@@ -43,10 +43,9 @@ func main() {
 		level.Error(logger).Log("err", err)
 		return
 	}
-	exchangeRateAPI.Convert("")
 
 	productRepo := product.NewRepository(idb.Client)
-	productSvc := product.NewService(productRepo)
+	productSvc := product.NewService(productRepo, exchangeRateAPI)
 	productSvc = product.NewLoggingService(log.With(logger, "component", "product"), productSvc)
 
 	orderRepo := order.NewRepository(idb.Client)
@@ -56,8 +55,8 @@ func main() {
 	httpLogger := log.With(logger, "component", "http")
 
 	mux := http.NewServeMux()
-	mux.Handle("/v1/products", product.MakeHandler(productSvc, httpLogger))
-	mux.Handle("/v1/orders", order.MakeHandler(orderSvc, httpLogger))
+	mux.Handle("/v1/products/", product.MakeHandler(productSvc, httpLogger))
+	mux.Handle("/v1/orders/", order.MakeHandler(orderSvc, httpLogger))
 
 	http.Handle("/", accessControl(mux, ctx))
 	http.Handle("/metrics", promhttp.Handler())

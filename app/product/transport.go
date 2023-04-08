@@ -49,20 +49,24 @@ func decodeCreateProductRequest(_ context.Context, r *http.Request) (interface{}
 }
 
 func decodeConvertCurrencyRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	vars := mux.Vars(r)
-	id, ok := vars["id"]
+	id, ok := mux.Vars(r)["id"]
 	if !ok {
 		return nil, apperr.ErrBadRoute
 	}
-
-	var body convertCurrencyRequest
-	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+	productID, err := strconv.ParseUint(id, 10, 32)
+	if err != nil {
 		return nil, err
 	}
-	productID, _ := strconv.ParseUint(id, 10, 32)
-	body.ID = model.ProductID(uint32(productID))
 
-	return body, nil
+	currencyCode := r.URL.Query().Get("currency_code")
+	if currencyCode == "" {
+		return nil, errors.New("currency_code query parameter is required")
+	}
+
+	return convertCurrencyRequest{
+		ID:           model.ProductID(uint32(productID)),
+		CurrencyCode: currencyCode,
+	}, nil
 }
 
 type errorer interface {

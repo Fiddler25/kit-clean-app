@@ -8,18 +8,18 @@ import (
 
 const defaultCurrencyCode = "JPY"
 
-type ExchangeRate struct {
+type API struct {
 	apiKey  string
 	baseURL *url.URL
 }
 
-func New(baseURL, apiKey string) (*ExchangeRate, error) {
+func New(baseURL, apiKey string) (*API, error) {
 	u, err := url.Parse(baseURL)
 	if err != nil {
 		return nil, err
 	}
 
-	return &ExchangeRate{
+	return &API{
 		apiKey:  apiKey,
 		baseURL: u,
 	}, nil
@@ -46,8 +46,8 @@ type (
 	}
 )
 
-func (er ExchangeRate) Convert(currencyCode string) (float64, error) {
-	u := er.baseURL.JoinPath("exchangerates_data", "convert")
+func (a API) Convert(currencyCode string) (float64, error) {
+	u := a.baseURL.JoinPath("exchangerates_data", "convert")
 
 	v := url.Values{}
 	v.Add("to", defaultCurrencyCode)
@@ -60,7 +60,7 @@ func (er ExchangeRate) Convert(currencyCode string) (float64, error) {
 	if err != nil {
 		return 0, err
 	}
-	req.Header.Set("apikey", er.apiKey)
+	req.Header.Set("apikey", a.apiKey)
 
 	resp, err := http.DefaultClient.Do(req)
 	defer resp.Body.Close()
