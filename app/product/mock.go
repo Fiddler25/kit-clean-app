@@ -20,22 +20,22 @@ func (m MockService) ConvertCurrency(ctx context.Context, ipt convertCurrencyInp
 	return m.ConvertCurrencyFunc(ctx, ipt)
 }
 
-var _ Repository = MockRepository{}
+var _ Store = MockStore{}
 
-type MockRepository struct {
+type MockStore struct {
 	CreateFunc func(ctx context.Context, p *model.Product) (*model.Product, error)
 	GetFunc    func(ctx context.Context, id model.ProductID) (*model.Product, error)
 	UpdateFunc func(ctx context.Context, p *model.Product) (*model.Product, error)
 }
 
-func (m MockRepository) Create(ctx context.Context, p *model.Product) (*model.Product, error) {
+func (m MockStore) Create(ctx context.Context, p *model.Product) (*model.Product, error) {
 	return m.CreateFunc(ctx, p)
 }
 
-func (m MockRepository) Get(ctx context.Context, id model.ProductID) (*model.Product, error) {
+func (m MockStore) Get(ctx context.Context, id model.ProductID) (*model.Product, error) {
 	return m.GetFunc(ctx, id)
 }
 
-func (m MockRepository) Update(ctx context.Context, p *model.Product) (*model.Product, error) {
+func (m MockStore) Update(ctx context.Context, p *model.Product) (*model.Product, error) {
 	return m.UpdateFunc(ctx, p)
 }

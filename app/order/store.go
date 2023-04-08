@@ -7,7 +7,19 @@ import (
 	"kit-clean-app/ent"
 )
 
-func (r *repository) Create(ctx context.Context, o *model.Order) (*model.Order, error) {
+type Store interface {
+	Create(ctx context.Context, e *model.Order) (*model.Order, error)
+}
+
+type store struct {
+	client *ent.Client
+}
+
+func NewStore(client *ent.Client) Store {
+	return &store{client: client}
+}
+
+func (s *store) Create(ctx context.Context, o *model.Order) (*model.Order, error) {
 	e, err := db.Client(ctx).Order.
 		Create().
 		SetProductID(uint32(o.ProductID)).

@@ -12,13 +12,13 @@ type Service interface {
 }
 
 type service struct {
-	repo            Repository
+	productStore    Store
 	exchangeRateAPI *exchangerate.API
 }
 
-func NewService(repo Repository, erAPI *exchangerate.API) Service {
+func NewService(productStore Store, erAPI *exchangerate.API) Service {
 	return &service{
-		repo:            repo,
+		productStore:    productStore,
 		exchangeRateAPI: erAPI,
 	}
 }

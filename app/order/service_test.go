@@ -18,9 +18,9 @@ func TestService_PlaceOrder(t *testing.T) {
 
 	type (
 		give struct {
-			ipt         *placeOrderInput
-			productRepo product.MockRepository
-			orderRepo   MockRepository
+			ipt          *placeOrderInput
+			productStore product.MockStore
+			orderStore   MockStore
 		}
 
 		want struct {
@@ -42,7 +42,7 @@ func TestService_PlaceOrder(t *testing.T) {
 					userID:    1,
 					quantity:  2,
 				},
-				productRepo: product.MockRepository{
+				productStore: product.MockStore{
 					GetFunc: func(ctx context.Context, id model.ProductID) (*model.Product, error) {
 						return &model.Product{
 							ID:          1,
@@ -62,7 +62,7 @@ func TestService_PlaceOrder(t *testing.T) {
 						}, nil
 					},
 				},
-				orderRepo: MockRepository{
+				orderStore: MockStore{
 					CreateFunc: func(ctx context.Context, e *model.Order) (*model.Order, error) {
 						return &model.Order{
 							ID:         1,
@@ -85,14 +85,14 @@ func TestService_PlaceOrder(t *testing.T) {
 			},
 		},
 		{
-			"productRepo.Update()でエラー発生",
+			"productStore.Update()でエラー発生",
 			give{
 				ipt: &placeOrderInput{
 					productID: 1,
 					userID:    1,
 					quantity:  2,
 				},
-				productRepo: product.MockRepository{
+				productStore: product.MockStore{
 					GetFunc: func(ctx context.Context, id model.ProductID) (*model.Product, error) {
 						return &model.Product{
 							ID:          1,
@@ -117,7 +117,7 @@ func TestService_PlaceOrder(t *testing.T) {
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			s := NewService(tx, tt.give.orderRepo, tt.give.productRepo)
+			s := NewService(tx, tt.give.orderStore, tt.give.productStore)
 
 			got, err := s.PlaceOrder(context.Background(), tt.give.ipt)
 

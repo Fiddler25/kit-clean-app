@@ -11,7 +11,7 @@ type convertCurrencyInput struct {
 }
 
 func (s *service) ConvertCurrency(ctx context.Context, ipt convertCurrencyInput) (*ReadProduct, error) {
-	p, err := s.repo.Get(ctx, ipt.id)
+	p, err := s.productStore.Get(ctx, ipt.id)
 	if err != nil {
 		return &ReadProduct{}, err
 	}

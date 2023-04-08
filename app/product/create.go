@@ -19,7 +19,7 @@ func (s *service) CreateProduct(ctx context.Context, ipt createProductInput) (*R
 		Price:       ipt.Price,
 		Stock:       ipt.Stock,
 	}
-	p, err := s.repo.Create(ctx, m)
+	p, err := s.productStore.Create(ctx, m)
 	if err != nil {
 		return &ReadProduct{}, err
 	}

@@ -15,12 +15,12 @@ func (m MockService) PlaceOrder(ctx context.Context, ipt *placeOrderInput) (*Rea
 	return m.PlaceOrderFunc(ctx, ipt)
 }
 
-var _ Repository = MockRepository{}
+var _ Store = MockStore{}
 
-type MockRepository struct {
+type MockStore struct {
 	CreateFunc func(ctx context.Context, e *model.Order) (*model.Order, error)
 }
 
-func (m MockRepository) Create(ctx context.Context, e *model.Order) (*model.Order, error) {
+func (m MockStore) Create(ctx context.Context, e *model.Order) (*model.Order, error) {
 	return m.CreateFunc(ctx, e)
 }

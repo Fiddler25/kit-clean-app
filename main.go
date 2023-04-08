@@ -44,12 +44,12 @@ func main() {
 		return
 	}
 
-	productRepo := product.NewRepository(idb.Client)
-	productSvc := product.NewService(productRepo, exchangeRateAPI)
+	productStore := product.NewStore(idb.Client)
+	productSvc := product.NewService(productStore, exchangeRateAPI)
 	productSvc = product.NewLoggingService(log.With(logger, "component", "product"), productSvc)
 
-	orderRepo := order.NewRepository(idb.Client)
-	orderSvc := order.NewService(idb, orderRepo, productRepo)
+	orderStore := order.NewStore(idb.Client)
+	orderSvc := order.NewService(idb, orderStore, productStore)
 	orderSvc = order.NewLoggingService(log.With(logger, "component", "order"), orderSvc)
 
 	httpLogger := log.With(logger, "component", "http")

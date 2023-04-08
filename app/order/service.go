@@ -12,16 +12,16 @@ type Service interface {
 }
 
 type service struct {
-	tx          db.Tx
-	repo        Repository
-	productRepo product.Repository
+	tx           db.Tx
+	orderStore   Store
+	productStore product.Store
 }
 
-func NewService(tx db.Tx, repo Repository, productRepo product.Repository) Service {
+func NewService(tx db.Tx, orderStore Store, productStore product.Store) Service {
 	return &service{
-		tx:          tx,
-		repo:        repo,
-		productRepo: productRepo,
+		tx:           tx,
+		orderStore:   orderStore,
+		productStore: productStore,
 	}
 }
 

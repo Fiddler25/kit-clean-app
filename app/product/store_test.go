@@ -13,13 +13,13 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func TestRepository_Get(t *testing.T) {
+func TestStore_Get(t *testing.T) {
 	t.Parallel()
 
 	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1")
 	ctx := ent.NewContext(context.Background(), client)
 
-	repo := product.NewRepository(client)
+	store := product.NewStore(client)
 
 	e := &model.Product{
 		Name:        "コーヒー",
@@ -27,7 +27,7 @@ func TestRepository_Get(t *testing.T) {
 		Price:       1500,
 		Stock:       5,
 	}
-	if _, err := repo.Create(ctx, e); err != nil {
+	if _, err := store.Create(ctx, e); err != nil {
 		t.Fatal(err)
 	}
 
@@ -65,7 +65,7 @@ func TestRepository_Get(t *testing.T) {
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := repo.Get(ctx, tt.id)
+			got, err := store.Get(ctx, tt.id)
 
 			if diff := cmp.Diff(tt.want.product, got); diff != "" {
 				t.Errorf("product mismatch (-want +got)\n%s", diff)

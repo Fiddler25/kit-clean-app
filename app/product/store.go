@@ -10,7 +10,21 @@ import (
 
 var ErrNotFound = errors.New("not found")
 
-func (r *repository) Create(ctx context.Context, p *model.Product) (*model.Product, error) {
+type Store interface {
+	Create(ctx context.Context, p *model.Product) (*model.Product, error)
+	Get(ctx context.Context, id model.ProductID) (*model.Product, error)
+	Update(ctx context.Context, p *model.Product) (*model.Product, error)
+}
+
+type store struct {
+	client *ent.Client
+}
+
+func NewStore(client *ent.Client) Store {
+	return &store{client: client}
+}
+
+func (s *store) Create(ctx context.Context, p *model.Product) (*model.Product, error) {
 	e, err := db.Client(ctx).Product.
 		Create().
 		SetName(p.Name).
@@ -25,7 +39,7 @@ func (r *repository) Create(ctx context.Context, p *model.Product) (*model.Produ
 	return entToProduct(e), nil
 }
 
-func (r *repository) Get(ctx context.Context, id model.ProductID) (*model.Product, error) {
+func (s *store) Get(ctx context.Context, id model.ProductID) (*model.Product, error) {
 	e, err := db.Client(ctx).Product.Get(ctx, uint32(id))
 	if err != nil {
 		if ent.IsNotFound(err) {
@@ -37,7 +51,7 @@ func (r *repository) Get(ctx context.Context, id model.ProductID) (*model.Produc
 	return entToProduct(e), nil
 }
 
-func (r *repository) Update(ctx context.Context, p *model.Product) (*model.Product, error) {
+func (s *store) Update(ctx context.Context, p *model.Product) (*model.Product, error) {
 	e, err := db.Client(ctx).Product.
 		UpdateOneID(uint32(p.ID)).
 		SetName(p.Name).
